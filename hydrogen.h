@@ -1,5 +1,5 @@
-
-/*                 HYREC: Hydrogen and Helium Recombination Code                                        */
+/*******************************************************************************************************/
+/*                 HYREC-2: Hydrogen and Helium Recombination Code                                      */
 /*         Written by Yacine Ali-Haimoud and Chris Hirata (2010-17)                                     */
 /*				with contributions from Nanoom Lee (2020) 												*/
 /*                                                                                                      */
@@ -8,8 +8,8 @@
 /*         Units used: cgs + eV (all temperatures in eV)                                                */
 /*                                                                                                      */
 /*         Revision history:                                                                            */
-/*            - January 2020 : - Added new mode, SWIFT                                                   */
-/*                             - Two timestep parameters for FULL mode and other modes.                  */
+/*            - January 2020 : - Added new mode, SWIFT                                                  */
+/*                             - Two timestep parameters for FULL mode and other modes.                 */
 /*            - December 2014: - Accounts for additional energy injection                               */                 
 /*            - May 2012:   - Using the photon distortion instead of absolute value of radiation field  */
 /*                          - Accounting for explicit dependence on alpha and m_e                       */
