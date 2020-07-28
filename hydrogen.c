@@ -19,7 +19,7 @@
 /*                        - Included dependence on xe and xHII in case HeII still present               */
 /*            - January 2011: - changed the post-Saha expansion to use the full derivative              */
 /*                              (including two-photon processes and diffusion) rather than Peebles'ODE  */
-/*	                          - post-Saha expansion can now pass the difference from Saha value         */
+/*                            - post-Saha expansion can now pass the difference from Saha value         */
 /*                              to external routines                                                    */              
 /*                            - differential 2s--1s rate is now systematically normalized to            */
 /*                              total 2s--1s rate that can be set by user in hydrogen.h                 */
