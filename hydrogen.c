@@ -1,5 +1,5 @@
 /********************************************************************************************************/
-/*                 HYREC-2: Hydrogen and Helium Recombination Code                                 	    */
+/*                 HYREC-2: Hydrogen and Helium Recombination Code                                      */
 /*         Written by Yacine Ali-Haimoud and Chris Hirata (C2010-17)                             	    */
 /*            with contributions from Nanoom Lee (2020)                                                 */
 /*                                                                                               	    */
