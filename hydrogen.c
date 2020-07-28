@@ -1,31 +1,29 @@
 /********************************************************************************************************/
-/*                 HYREC-2: Hydrogen and Helium Recombination Code                                 		*/
-/*         Written by Yacine Ali-Haimoud and Chris Hirata (C2010-17)                             		*/
-/*				with contributions from Nanoom Lee (2020) 										 		*/
-/*                                                                                               		*/
-/*         hydrogen.c: all functions related to Hydrogen recombination                           		*/
-/*                                                                                               		*/
-/*         Units used: cgs + eV (all temperatures in eV)                                         		*/
-/*                                                                                               		*/
-/*         Revision history:                                                                     		*/
-/*            - January 2020: - Added new mode, SWIFT                                            		*/
-/*                            - Added a function which prints quantities related to		         		*/
-/*                              recombination spectrum.                                          		*/
-/*            - December 2014: Added effect of non-standard energy injection                     		*/  
-/*            - May 2012: - Now solve for the photon distortion instead of absolute value        		*/
-/*                          of radiation field (less prone to numerical errors)             			*/
-/*                        - Improved the post-Saha expansion to properly account for           			*/
-/*                          non-thermal distortions                                         			*/
-/*                        - Added explicit dependence on fine-structure constant               			*/
-/*                          (fsR = alpha/alpha0) and electron mass (meR = me/me0 ~ mue/mue0)    		*/
-/*                        - Included dependence on xe and xHII in case HeII still present      			*/
+/*                 HYREC-2: Hydrogen and Helium Recombination Code                                 	    */
+/*         Written by Yacine Ali-Haimoud and Chris Hirata (C2010-17)                             	    */
+/*            with contributions from Nanoom Lee (2020)                                                 */
+/*                                                                                               	    */
+/*         hydrogen.c: all functions related to Hydrogen recombination                           	    */
+/*                                                                                               	    */
+/*         Units used: cgs + eV (all temperatures in eV)                                         	    */
+/*                                                                                               	    */
+/*         Revision history:                                                                     	    */
+/*            - January 2020: - Added new mode, SWIFT                                            	    */
+/*            - December 2014: Added effect of non-standard energy injection                     	    */  
+/*            - May 2012: - Now solve for the photon distortion instead of absolute value        	    */
+/*                          of radiation field (less prone to numerical errors)             		    */
+/*                        - Improved the post-Saha expansion to properly account for           		    */
+/*                          non-thermal distortions                                         		    */
+/*                        - Added explicit dependence on fine-structure constant               		    */
+/*                          (fsR = alpha/alpha0) and electron mass (meR = me/me0 ~ mue/mue0)    	    */
+/*                        - Included dependence on xe and xHII in case HeII still present               */
 /*            - January 2011: - changed the post-Saha expansion to use the full derivative              */
 /*                              (including two-photon processes and diffusion) rather than Peebles'ODE  */
-/*	                          - post-Saha expansion can now pass the difference from Saha value  		*/
-/*                              to external routines                                         			*/              
-/*                            - differential 2s--1s rate is now systematically normalized to     		*/
-/*                              total 2s--1s rate that can be set by user in hydrogen.h       			*/
-/*            - Written November 2010                                                            		*/
+/*	                          - post-Saha expansion can now pass the difference from Saha value  	    */
+/*                              to external routines                                         		    */              
+/*                            - differential 2s--1s rate is now systematically normalized to     	    */
+/*                              total 2s--1s rate that can be set by user in hydrogen.h       		    */
+/*            - Written November 2010                                                            	    */
 /********************************************************************************************************/ 
 
 

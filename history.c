@@ -1,7 +1,7 @@
 /******************************************************************************************************/
 /*                           HYREC-2: Hydrogen and Helium Recombination Code                          */
 /*                      Written by Yacine Ali-Haimoud and Chris Hirata (2010-17)                      */
-/*								with contributions from Nanoom Lee (2020)							  */
+/*                         with contributions from Nanoom Lee (2020)                                  */
 /*                                                                                                    */
 /*         history.c: functions for numerical integration of the recombination history                */
 /*                                                                                                    */
@@ -10,12 +10,10 @@
 /*             - January 2020 : - added massive neutrino part in Hubble rate                          */
 /*                              - added new mode, SWIFT                                               */
 /*                              - separated DLNA and DXHII_MAX in two cases, MODEL = FULL or else     */
-/*								- added a function which prints quantities related to recombination   */
-/*								  spectrum.															  */
 /*                              - added error_massage control                                         */
 /*             -         2015: - added DM annihilation and 21 cm routines.                            */
 /*                             - changed cosmological parameters input form                           */
-/*	            		       - possibility to change fine structure constant/ electron mass         */
+/*	                           - possibility to change fine structure constant/ electron mass         */
 /*                             - nH0 now in cm^-3 (instead of m^-3 which was only used in helium.c)   */     
 /*             - October 2012: - added some wrapper functions for running CAMB with HyRec             */
 /*                              (courtesy of Antony Lewis)                                            */
