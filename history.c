@@ -80,7 +80,7 @@ double rec_HubbleRate(REC_COSMOPARAMS *cosmo, double z, int *error, char error_m
    }
    
    /* Total density parameter, including curvature */
-   double rho = cosmo->omh2 /a/a/a     /* Matter */
+   double rho = cosmo->ocbh2 /a/a/a     /* Matter (baryon + CDM) */
               + cosmo->okh2 /a/a       /* Curvature */
               + cosmo->odeh2           /* Dark energy */
               + cosmo->orh2 /a/a/a/a   /* Radiation (photons + massless neutrinos) */
@@ -97,7 +97,7 @@ Cosmological parameters Input/Output
 *************************************************************************************************/
 
 void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param, int *error, char error_message[SIZE_ErrorM]) {
-  double Omega_b, Omega_m, Omega_k, y, Tnu0;
+  double Omega_b, Omega_cb, Omega_k, y, Tnu0;
   int i;
   if (fout!=NULL) fprintf(fout, "Enter Hubble parameter (h) : \n");
   fscanf(fin, "%lg", &(param->h));
@@ -106,8 +106,8 @@ void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param, int *erro
   
   if (fout!=NULL) fprintf(fout, "Enter baryon density, Omega_b: \n");
   fscanf(fin, "%lg", &(Omega_b));
-  if (fout!=NULL) fprintf(fout, "Enter total matter (CDM+baryons) density, Omega_m: \n");
-  fscanf(fin, "%lg", &(Omega_m));
+  if (fout!=NULL) fprintf(fout, "Enter matter (CDM+baryons) density, Omega_cb: \n");
+  fscanf(fin, "%lg", &(Omega_cb));
   if (fout!=NULL) fprintf(fout, "Enter curvature, Omega_k: \n");
   fscanf(fin, "%lg", &(Omega_k));
   
@@ -131,7 +131,7 @@ void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param, int *erro
   fscanf(fin, "%lg", &(param->meR));
   
   param->orh2  = 4.48162687719e-7 *param->T0*param->T0*param->T0*param->T0 *(1. + 0.227107317660239 *param->Nnueff);
-  param->omh2  = Omega_m *param->h*param->h;
+  param->ocbh2  = Omega_cb *param->h*param->h;
   param->obh2  = Omega_b *param->h*param->h;
   param->okh2  = Omega_k *param->h*param->h;
   
@@ -145,7 +145,7 @@ void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param, int *erro
       }
   }
   
-  param->odeh2 = (1. -Omega_m -Omega_k - param->orh2/param->h/param->h- param->onuh2/param->h/param->h)*param->h*param->h;
+  param->odeh2 = (1. -Omega_cb -Omega_k - param->orh2/param->h/param->h- param->onuh2/param->h/param->h)*param->h*param->h;
   param->nH0 = 11.223846333047e-6*param->obh2*(1.-param->YHe);  // number density of hudrogen today in cm-3 
   param->fHe = param->YHe/(1-param->YHe)/3.97153;              // abundance of helium by number 
 
@@ -169,7 +169,7 @@ void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param, int *erro
   if (fout!=NULL) fprintf(fout, "fpbh: \n");
   fscanf(fin, "%lg", &(param->inj_params->fpbh));
   
-  param->inj_params->odmh2      = param->omh2 - param->obh2;
+  param->inj_params->odmh2      = param->ocbh2 - param->obh2;
   if (MODEL == 4) param->dlna = DLNA_SWIFT;
   else param->dlna = DLNA_HYREC;
 
@@ -363,12 +363,12 @@ void rec_xH1_stiff(int model, REC_COSMOPARAMS *cosmo, double z, double xHeII, do
   }
   
   dxH1sdlna_Saha = -rec_dxHIIdlna(model_stiff, xHIISaha + xHeII, xHIISaha, nH, H, T, T, atomic, rad, fit, 
-                   iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->omh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
+                   iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
   Dxe            = 0.01*xH1sSaha;
   DdxH1sdlna_DxH1s = (rec_dxHIIdlna(model_stiff, xHIISaha+Dxe + xHeII, xHIISaha+Dxe, nH, H, T, T, atomic, rad, fit,
-                      iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->omh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann)
+                      iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann)
                     -rec_dxHIIdlna(model_stiff, xHIISaha-Dxe + xHeII, xHIISaha-Dxe, nH, H, T, T, atomic, rad, fit,
-                      iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->omh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann))/2./Dxe;
+                      iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann))/2./Dxe;
 
   *xH1 = xH1sSaha + (dxH1sSaha_dlna - dxH1sdlna_Saha)/DdxH1sdlna_DxH1s;
   
@@ -378,7 +378,7 @@ void rec_xH1_stiff(int model, REC_COSMOPARAMS *cosmo, double z, double xHeII, do
 
   /* Update photon population when MODEL = FULL */
   if (model == 3) nothing = -rec_dxHIIdlna(model, xHeII + 1.-*xH1, 1.-*xH1, nH, H, T, T,
-  		                      atomic, rad, fit, iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->omh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu,cosmo->Nmnu, cosmo->inj_params->pann);
+  		                      atomic, rad, fit, iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu,cosmo->Nmnu, cosmo->inj_params->pann);
 
   if (*xH1 < 0. || *xH1 != *xH1) {
     sprintf(sub_message, "xH1 < 0 in rec_xH1_stiff: at z = %f, xH1 = %E\n", z, *xH1);
@@ -433,7 +433,7 @@ void get_rec_next2_HHe(int model, REC_COSMOPARAMS *cosmo, double z_in, double Tm
   /* Otherwise use second-order explicit solver */
   else {
 	  dxHIIdlna = rec_dxHIIdlna(model, xe, 1.-(*xH1), nH, H, kBoltz*Tm, TR, atomic, rad, fit,
-  			    iz_rad, z_in, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->omh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
+  			    iz_rad, z_in, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
 	  *xH1 -= DLNA * hyrec_integrator(dxHIIdlna, dxHIIdlna_prev, z_in);
   }
 
@@ -489,7 +489,7 @@ void rec_get_xe_next1_H(int model, REC_COSMOPARAMS *cosmo, double z_in, double x
   /* Otherwise use second-order explicit solver */
   else {
 	dxedlna = rec_dxHIIdlna(model, xe_in, xe_in, nH, H, kBoltz*Tm_in, TR, atomic,
-	            rad, fit, iz_rad, z_in, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->omh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
+	            rad, fit, iz_rad, z_in, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
 	*xe_out = xe_in + DLNA * hyrec_integrator(dxedlna, dxedlna_prev, z_in);
   }
   
@@ -541,7 +541,7 @@ void rec_get_xe_next2_HTm(int model, REC_COSMOPARAMS *cosmo,
   if (TR/cosmo->fsR/cosmo->fsR/cosmo->meR <= TR_MIN
       || kBoltz*Tm_in/TR <= TM_TR_MIN) model = PEEBLES;
   dxedlna = rec_dxHIIdlna(model, xe_in, xe_in, nH, H, kBoltz*Tm_in, TR, atomic,
-			  rad, fit, iz_rad, z_in, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->omh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
+			  rad, fit, iz_rad, z_in, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
   
   dTmdlna = rec_dTmdlna(z_in, xe_in, Tm_in, cosmo, dEdtdV, H);
   if ( z_in < 600){

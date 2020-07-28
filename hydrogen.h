@@ -149,7 +149,7 @@ void allocate_and_read_fit(FIT_FUNC *fit, int *error, char *path_to_hyrec, char 
 void free_fit(FIT_FUNC *fit);
 void interpolate_rates(double Alpha[2], double DAlpha[2], double Beta[2], double *R2p2s, double TR, double TM_TR,
 		       HYREC_ATOMIC *atomic, double fsR, double meR, int *error, char error_message[SIZE_ErrorM]);
-double rec_swift_hyrec_dxHIIdlna(double xe, double xHII, double nH, double Hubble, double TM, double TR, HYREC_ATOMIC *atomic, FIT_FUNC *fit, double z, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wm, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann);
+double rec_swift_hyrec_dxHIIdlna(double xe, double xHII, double nH, double Hubble, double TM, double TR, HYREC_ATOMIC *atomic, FIT_FUNC *fit, double z, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wcb, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann);
 double rec_HMLA_dxHIIdlna(double xe, double xHII, double nH, double H, double TM, double TR, 
 		          HYREC_ATOMIC *atomic, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM]);
 void populate_Diffusion(double *Aup, double *Adn, double *A2p_up, double *A2p_dn, 
@@ -172,7 +172,7 @@ double rec_HMLA_2photon_dxedlna(double xe, double nH, double H, double TM, doubl
                                 double zstart, unsigned iz, double z, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM]);
 double rec_dxHIIdlna(int model, double xe, double xHII, double nH, double H, double TM, double TR, 
                      HYREC_ATOMIC *atomic, RADIATION *rad, FIT_FUNC *fit, unsigned iz, double z,
-		     double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wm, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann);
+		     double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wcb, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann);
 
 
 /************ SWITCHES FOR RADIATIVE TRANSFER. ALL SWITCHES SET TO 1 ARE THE DEFAULT MODEL  ************/

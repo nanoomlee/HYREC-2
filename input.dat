@@ -34,7 +34,7 @@ All parameters must be present
 0.70     = h                         H0/(100 km/s/Mpc)
 2.728    = T0                        CMB temperature today, in K
 0.04     = Omega_b                   baryon density parameter
-0.26     = Omega_m                   matter (baryon + CDM) density parameter
+0.26     = Omega_cb                   matter (baryon + CDM) density parameter
 0.       = Omega_k                   curvature density parameter   -- Omega_Lambda is deduced from these
 1.       = Nmnu						 number of massive neutrino
 0.06     = mnu1						 mass of the first neutrino    -- Massive ones should come first

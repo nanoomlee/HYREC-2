@@ -398,7 +398,7 @@ void interpolate_rates(double Alpha[2], double DAlpha[2], double Beta[2], double
 }
 
 
-double rec_swift_hyrec_dxHIIdlna(double xe, double xHII, double nH, double H, double TM, double TR, HYREC_ATOMIC *atomic, FIT_FUNC *fit, double z, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wm, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann){
+double rec_swift_hyrec_dxHIIdlna(double xe, double xHII, double nH, double H, double TM, double TR, HYREC_ATOMIC *atomic, FIT_FUNC *fit, double z, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wcb, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann){
 
    double Alpha[2], DAlpha[2], Beta[2], R2p2s, RLya;
    double DK_K_fid, DK_K, fitted_RLya, alphaB, four_betaB;
@@ -416,7 +416,7 @@ double rec_swift_hyrec_dxHIIdlna(double xe, double xHII, double nH, double H, do
    TM = ratio * TR;   // This way ensure that TM<=TR is preserved 
   
    /* The numbers in the following lines are fiducial parameters for correction function (Do not change) */
-   diff[0] = (wm - 0.14175)*pow(T0fid_T0,3);
+   diff[0] = (wcb - 0.14175)*pow(T0fid_T0,3);
    diff[1] = (wb*(1-Yp) - 0.02242*(1-0.246738546372))*pow(T0fid_T0,3);
    if (Nmnu == 0) {
 	   diff[2] = Nur-3.046;
@@ -1010,7 +1010,7 @@ December 2014: added dependence on additional energy injection.
 double rec_dxHIIdlna(int model, double xe, double xHII, double nH, double H, double TM, double TR, 
                      HYREC_ATOMIC *atomic, RADIATION *rad, FIT_FUNC *fit, unsigned iz, double z,
 		     double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], 
-			 double wm, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann){
+			 double wcb, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann){
 
   double Pion, RLya, four_betaB, result;
   double result2;
@@ -1042,7 +1042,7 @@ double rec_dxHIIdlna(int model, double xe, double xHII, double nH, double H, dou
 				result = rec_HMLA_dxHIIdlna(xe, xHII, nH, H, TM, TR, atomic, fsR, meR, ion, exclya, error, error_message);
 			}
 			else result = rec_swift_hyrec_dxHIIdlna(xe, xHII, nH, H, TM, TR, atomic, fit,
-			                             z, fsR, meR, ion, exclya, error, error_message, wm, wb, wnu, Nur, Yp, mnu, Nmnu, pann);
+			                             z, fsR, meR, ion, exclya, error, error_message, wcb, wb, wnu, Nur, Yp, mnu, Nmnu, pann);
 		}
 	}
   }
