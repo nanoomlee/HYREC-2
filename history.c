@@ -14,7 +14,7 @@
 /*             -         2015: - added DM annihilation and 21 cm routines.                            */
 /*                             - changed cosmological parameters input form                           */
 /*	                           - possibility to change fine structure constant/ electron mass         */
-/*                             - nH0 now in cm^-3 (instead of m^-3 which was only used in helium.c)   */     
+/*                             - nH0 now in cm^-3 (instead of m^-3 which was only used in helium.c)   */
 /*             - October 2012: - added some wrapper functions for running CAMB with HyRec             */
 /*                              (courtesy of Antony Lewis)                                            */
 /*                              - possibility to change fine structure constant/ electron mass        */ 
