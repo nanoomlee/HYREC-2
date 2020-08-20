@@ -13,7 +13,6 @@ int main(void) {
 
   double zmax = 8000.;
   double zmin = 0.;
-  double xe, Tm;
 
   rec_data.path_to_hyrec = "";
   hyrec_allocate(&rec_data, zmax, zmin);
