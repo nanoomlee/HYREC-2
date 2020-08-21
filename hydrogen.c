@@ -1008,7 +1008,7 @@ December 2014: added dependence on additional energy injection.
 double rec_dxHIIdlna(int model, double xe, double xHII, double nH, double H, double TM, double TR, 
                      HYREC_ATOMIC *atomic, RADIATION *rad, FIT_FUNC *fit, unsigned iz, double z,
 		     double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], 
-			 double wcb, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann){
+			 double wcb, double wb, double Nur, double Yp, int Nmnu){
 
   double Pion, RLya, four_betaB, result;
   double result2;

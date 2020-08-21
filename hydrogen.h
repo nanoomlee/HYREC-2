@@ -172,7 +172,7 @@ double rec_HMLA_2photon_dxedlna(double xe, double nH, double H, double TM, doubl
                                 double zstart, unsigned iz, double z, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM]);
 double rec_dxHIIdlna(int model, double xe, double xHII, double nH, double H, double TM, double TR, 
                      HYREC_ATOMIC *atomic, RADIATION *rad, FIT_FUNC *fit, unsigned iz, double z,
-		     double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wcb, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann);
+		     double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wcb, double wb, double Nur, double Yp, int Nmnu);
 
 
 /************ SWITCHES FOR RADIATIVE TRANSFER. ALL SWITCHES SET TO 1 ARE THE DEFAULT MODEL  ************/
