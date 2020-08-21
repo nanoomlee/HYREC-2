@@ -396,7 +396,7 @@ void interpolate_rates(double Alpha[2], double DAlpha[2], double Beta[2], double
 }
 
 
-double rec_swift_hyrec_dxHIIdlna(double xe, double xHII, double nH, double H, double TM, double TR, HYREC_ATOMIC *atomic, FIT_FUNC *fit, double z, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wcb, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann){
+double rec_swift_hyrec_dxHIIdlna(double xe, double xHII, double nH, double H, double TM, double TR, HYREC_ATOMIC *atomic, FIT_FUNC *fit, double z, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wcb, double wb, double Nur, double Yp, int Nmnu){
 
    double Alpha[2], DAlpha[2], Beta[2], R2p2s, RLya;
    double DK_K_fid, DK_K, fitted_RLya, alphaB, four_betaB;
@@ -1040,7 +1040,7 @@ double rec_dxHIIdlna(int model, double xe, double xHII, double nH, double H, dou
 				result = rec_HMLA_dxHIIdlna(xe, xHII, nH, H, TM, TR, atomic, fsR, meR, ion, exclya, error, error_message);
 			}
 			else result = rec_swift_hyrec_dxHIIdlna(xe, xHII, nH, H, TM, TR, atomic, fit,
-			                             z, fsR, meR, ion, exclya, error, error_message, wcb, wb, wnu, Nur, Yp, mnu, Nmnu, pann);
+			                             z, fsR, meR, ion, exclya, error, error_message, wcb, wb, Nur, Yp, Nmnu);
 		}
 	}
   }

@@ -149,7 +149,7 @@ void allocate_and_read_fit(FIT_FUNC *fit, int *error, char *path_to_hyrec, char 
 void free_fit(FIT_FUNC *fit);
 void interpolate_rates(double Alpha[2], double DAlpha[2], double Beta[2], double *R2p2s, double TR, double TM_TR,
 		       HYREC_ATOMIC *atomic, double fsR, double meR, int *error, char error_message[SIZE_ErrorM]);
-double rec_swift_hyrec_dxHIIdlna(double xe, double xHII, double nH, double Hubble, double TM, double TR, HYREC_ATOMIC *atomic, FIT_FUNC *fit, double z, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wcb, double wb, double wnu, double Nur, double Yp, double mnu[3], int Nmnu, double pann);
+double rec_swift_hyrec_dxHIIdlna(double xe, double xHII, double nH, double Hubble, double TM, double TR, HYREC_ATOMIC *atomic, FIT_FUNC *fit, double z, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM], double wcb, double wb, double Nur, double Yp, int Nmnu);
 double rec_HMLA_dxHIIdlna(double xe, double xHII, double nH, double H, double TM, double TR, 
 		          HYREC_ATOMIC *atomic, double fsR, double meR, double ion, double exclya, int *error, char error_message[SIZE_ErrorM]);
 void populate_Diffusion(double *Aup, double *Adn, double *A2p_up, double *A2p_dn, 
