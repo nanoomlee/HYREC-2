@@ -36,6 +36,8 @@
 #include <math.h>
 #include <stdbool.h>
 #include <string.h>
+#include <unistd.h>
+#include <libgen.h>
 
 #include "history.h" 
 #include "helium.h"
@@ -50,7 +52,7 @@ Hubble expansion rate in sec^-1.
 
 extern double exported_dtauda(double *);
 
-double rec_HubbleRate(REC_COSMOPARAMS *cosmo, double z) {
+double rec_HubbleRate(REC_COSMOPARAMS *cosmo, double z, int *error, char error_message[SIZE_ErrorM]) {
   double a;
 
   a = 1./(1.+z);
@@ -58,109 +60,118 @@ double rec_HubbleRate(REC_COSMOPARAMS *cosmo, double z) {
   return 1./(a*a)/exported_dtauda(&a) /3.085678e22 * 2.99792458e8;
 }
 
+HYREC_DATA rec_data;
+int firstTime = 0;
+double logstart, dlna;
+long int Nz;
+
+void hyrec_init() {
+   /* Allocate spaces for hyrec data */
+  double zmax = 8000.;
+  double zmin = 0.;
+  char *buffer = (char *) malloc (1024);
+  getcwd (buffer, 1024);
+  chdir(HYRECPATH);
+  rec_data.path_to_hyrec = "";
+  hyrec_allocate(&rec_data, zmax, zmin);
+  chdir(buffer);
+  free(buffer);
+}
+
 void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const double* OmegaN, 
-         const double* Omegav, const double* h0inp, const double* tcmb, const double* yp, const double* num_nu, double *xe, double *Tm, const double* sum_mnu) {
-  
-  HYREC_DATA rec_data;
+         const double* Omegav, const double* h0inp, const double* tcmb, const double* yp, const double* num_nu, double *xe, double *Tm) {
 
   double zmax = 8000.;
   double zmin = 0.;
   double h = *h0inp/100.;
   double h2 = h*h;
-  rec_data.path_to_hyrec = "../HyRec";
-  hyrec_allocate(&rec_data, zmax, zmin);
+  int error;
+  
+  if (firstTime == 0) {
+    hyrec_init();
+	firstTime=1;
+    logstart = -log(1.+zmax);
+	Nz = rec_data.Nz;
+  }
   rec_data.cosmo->h = h;
   rec_data.cosmo->T0 = *tcmb;
   rec_data.cosmo->obh2 = *OmegaB * h2;
-  rec_data.cosmo->omh2 = (*OmegaB + *OmegaC) * h2;
+  rec_data.cosmo->ocbh2 = (*OmegaB + *OmegaC) * h2;
   rec_data.cosmo->orh2  = 4.48162687719e-7 * pow(*tcmb,4.) *(1. + 0.227107317660239* *num_nu);
   rec_data.cosmo->okh2 = ( 1 - *OmegaC - *OmegaB - *Omegav - *OmegaN) * h2;
   rec_data.cosmo->odeh2 = *Omegav * h2;
   rec_data.cosmo->onuh2 = *OmegaN * h2;
   rec_data.cosmo->w0 = -1;  /* not actually used since those are needed only in Hubble rate, */
   rec_data.cosmo->wa = 0;   /* which is provided directly from CAMB                          */
-  rec_data.cosmo->Y = *yp;
+  rec_data.cosmo->YHe = *yp;
   rec_data.cosmo->Nnueff = *num_nu;  /* effective number of species of massless neutrino */
   rec_data.cosmo->fsR = rec_data.cosmo->meR = 1.;   /* Default: today's values */
-
-
-  rec_get_cosmoparam(stdin, stderr, rec_data.cosmo, &rec_data.error, rec_data.error_message);
-  hyrec_compute(&rec_data, MODEL);
-  if (rec_data.error == 1) fprintf(stderr,"%s\n",rec_data.error_message);
-  else {
-      double z = zmax;
-      char file[200];
-      FILE *fout;
-      fout = fopen("output_xe.dat", "a");
-  	  while (z > zmin) {
-	    fprintf(fout, "%f %1.10E %1.10E\n",z,hyrec_xe(z, &rec_data),hyrec_Tm(z, &rec_data));
-		z -= 1.;
-	  }
-      fclose(fout);
-  }
-  hyrec_free(&rec_data);
-  return 0;
-
-
-printf("%e\n",*sum_mnu);
-  double h2 = *h0inp/100.;
-  h2 =h2*h2;
-  param.T0 = *tcmb;
-  param.obh2 = *OmegaB * h2;
-  param.ocbh2 = (*OmegaB + *OmegaC) * h2;
-  param.okh2 = ( 1 - *OmegaC - *OmegaB - *Omegav - *OmegaN) * h2;
-  param.odeh2 = *Omegav * h2;
-  param.w0=-1; /* not actually used */
-  param.wa=0;
-  param.Y = *yp;
-  param.Nnueff = *num_nu;
-  param.fsR = param.meR = 1.;  /*** Default: today's values ***/
+  rec_data.cosmo->nH0 = 11.223846333047e-6*rec_data.cosmo->obh2*(1.-rec_data.cosmo->YHe);  // number density of hudrogen today in cm-3 
+  rec_data.cosmo->fHe = rec_data.cosmo->YHe/(1.-rec_data.cosmo->YHe)/3.97153;              // abundance of helium by number 
+  if (MODEL == 4) rec_data.cosmo->dlna = DLNA_SWIFT;
+  else rec_data.cosmo->dlna = DLNA_HYREC;
+  dlna = rec_data.cosmo->dlna;
   
-  rec_set_derived_params(&param);
-
-  if (firstTime == 0) {
-   hyrec_init();
-   firstTime=1;
-   logstart = -log(1.+ZSTART);
-   xe_output          = create_1D_array(param.nz);
-   tm_output          = create_1D_array(param.nz);
-  }
-  Dfnu_hist          = create_2D_array(NVIRT, param.nzrt);
-  Dfminus_Ly_hist[0] = create_1D_array(param.nzrt);        /* Ly-alpha */
-  Dfminus_Ly_hist[1] = create_1D_array(param.nzrt);        /* Ly-beta  */
-  Dfminus_Ly_hist[2] = create_1D_array(param.nzrt);        /* Ly-gamma */
-  //rec_build_history(&param, &rate_table, &twog_params, xe_output, tm_output,Dfnu_hist, Dfminus_Ly_hist);
-  rec_build_history(&param, &rate_table, &twog_params, xe, Tm, Dfnu_hist, Dfminus_Ly_hist);
+  /* It seems there are no parameters related to DM annihilation in CAMB 
+     So, following parameters (inj_params) are meaningless here          */
+  rec_data.cosmo->inj_params->pann = 0.;
+  rec_data.cosmo->inj_params->pann_halo = 0.;
+  rec_data.cosmo->inj_params->ann_z = 1.;
+  rec_data.cosmo->inj_params->ann_zmax = 1.;
+  rec_data.cosmo->inj_params->ann_zmin = 1.;
+  rec_data.cosmo->inj_params->ann_var = 1.;
+  rec_data.cosmo->inj_params->ann_z_halo = 1.;
+  rec_data.cosmo->inj_params->on_the_spot = 1;
   
-  free(rate_table.logTR_tab);
-  free(rate_table.TM_TR_tab);
-  free_2D_array(rate_table.logAlpha_tab[0], NTM);
-  free_2D_array(rate_table.logAlpha_tab[1], NTM);
-  free(rate_table.logR2p2s_tab);
-  //free(xe_output);
-  //free(tm_output);
-  free_2D_array(Dfnu_hist, NVIRT);
-  free(Dfminus_Ly_hist[0]);
-  free(Dfminus_Ly_hist[1]);
-  free(Dfminus_Ly_hist[2]);
+  /* Primodial black hole parameters */
+  rec_data.cosmo->inj_params->Mpbh = 1.;
+  rec_data.cosmo->inj_params->fpbh = 0.;
+  
+  rec_data.cosmo->inj_params->odmh2 = *OmegaC * h2;
+  
+  /* This is a flag to use Hubble rate defined history.c 
+     This flag is for the HYREC-2 implementation in CLASS    */
+  double Hubble_flag[1];
+  Hubble_flag[0] = -1.;
+  
+  rec_build_history(MODEL, rec_data.zmax, rec_data.zmin, rec_data.cosmo, rec_data.atomic,
+		    rec_data.rad, rec_data.fit, xe, Tm, Hubble_flag, rec_data.Nz, &rec_data.error, rec_data.error_message);
+  error = rec_data.error;
+  
+  free_atomic(rec_data.atomic);
+  free(rec_data.cosmo->inj_params);
+  free(rec_data.cosmo);
+  free(rec_data.error_message);
+  if (MODEL == 3) free_radiation(rec_data.rad);
+  free(rec_data.rad);
+  free_fit(rec_data.fit);
+  
+  if (error == 1) {
+	  printf("\n%s\n",rec_data.error_message);
+	  exit(1);
+  }
 }
 
+
 double hyrec_xe_(double* a, double *xe){
-//double hyrec_xe_(double* a){
  double loga = log(*a);
+ int error;   /* error and error_message are meaningless here */
+ char *error_message;
+ error_message = malloc(SIZE_ErrorM);
  if (loga < logstart) {
   return xe[0];
  }
- return rec_interp1d(logstart, DLNA, xe, param.nz, loga);
+ return rec_interp1d(logstart, dlna, xe, Nz, loga, &error, error_message);
 }
 
 double hyrec_tm_(double* a, double *tm){
-//double hyrec_tm_(double* a){
  double loga = log(*a);
+ int error;  /* error and error_message are meaningless here */
+ char *error_message;
  if (loga < logstart) {
   return tm[0];
  }
- return rec_interp1d(logstart, DLNA, tm, param.nz, loga);
+ return rec_interp1d(logstart, dlna, tm, Nz, loga, &error, error_message);
 }
 
 #else
@@ -269,6 +280,8 @@ void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param, int *erro
   fscanf(fin, "%lg", &(param->inj_params->ann_var));
   if (fout!=NULL) fprintf(fout, "ann_z_halo: \n");
   fscanf(fin, "%lg", &(param->inj_params->ann_z_halo));
+  if (fout!=NULL) fprintf(fout, "one_the_spot: \n");
+  fscanf(fin, "%d", &(param->inj_params->on_the_spot));
 
   if (fout!=NULL) fprintf(fout, "Mpbh: \n");
   fscanf(fin, "%lg", &(param->inj_params->Mpbh));
@@ -276,6 +289,7 @@ void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param, int *erro
   fscanf(fin, "%lg", &(param->inj_params->fpbh));
   
   param->inj_params->odmh2      = param->ocbh2 - param->obh2;
+  printf("%e %e %e %e %e %e %e %d\n", param->inj_params->pann,param->inj_params->pann_halo,param->inj_params->ann_z,param->inj_params->ann_zmax,param->inj_params->ann_zmin,param->inj_params->ann_var,param->inj_params->ann_z_halo,param->inj_params->on_the_spot); 
   if (MODEL == 4) param->dlna = DLNA_SWIFT;
   else param->dlna = DLNA_HYREC;
 
@@ -475,7 +489,6 @@ void rec_xH1_stiff(int model, REC_COSMOPARAMS *cosmo, double z, double xHeII, do
                       iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->Nnueff, cosmo->YHe, cosmo->Nmnu)
                     -rec_dxHIIdlna(model_stiff, xHIISaha-Dxe + xHeII, xHIISaha-Dxe, nH, H, T, T, atomic, rad, fit,
                       iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->Nnueff, cosmo->YHe, cosmo->Nmnu))/2./Dxe;
-
   *xH1 = xH1sSaha + (dxH1sSaha_dlna - dxH1sdlna_Saha)/DdxH1sdlna_DxH1s;
   
 
@@ -517,7 +530,6 @@ void get_rec_next2_HHe(int model, REC_COSMOPARAMS *cosmo, double z_in, double Tm
   double nH, TR, DLNA;
   char sub_message[128]; 
   DLNA = cosmo->dlna;
-  
   xe = *xHeII + 1.- (*xH1);
   nH = cosmo->nH0 *cube(1.+z_in);
   TR = kBoltz * cosmo->T0 *(1.+z_in);
@@ -706,7 +718,7 @@ char* rec_build_history(int model, double zstart, double zend,
   for(iz = 0; z >= 0. && Delta_xe > 1e-8; iz++) {
 	z = (1.+zstart)*exp(-cosmo->dlna*iz) - 1.;
     xe_output[iz] = rec_xesaha_HeII_III(cosmo->nH0, cosmo->T0, cosmo->fHe, z, &Delta_xe, cosmo->fsR, cosmo->meR);
-    Tm_output[iz] = cosmo->T0 * (1.+z); 
+    Tm_output[iz] = cosmo->T0 * (1.+z);
   }
    
   /******** He II -> I recombination. 
@@ -933,7 +945,7 @@ void hyrec_allocate(HYREC_DATA *data, double zmax, double zmin) {
   data->cosmo  = (REC_COSMOPARAMS *) malloc(sizeof(REC_COSMOPARAMS));
   data->cosmo->inj_params = (INJ_PARAMS *)  malloc(sizeof(INJ_PARAMS));
   
-  data->Nz = (long int) (log((1.+zmax)/(1.+zmin))/DLNA) + 2; 
+  data->Nz = (long int) (log((1.+zmax)/(1.+zmin))/DLNA) + 2;
   data->rad = (RADIATION *) malloc(sizeof(RADIATION));
 
   // For now assume that radiation field never needed over more than 1 decade in redshift
