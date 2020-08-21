@@ -48,14 +48,119 @@ Hubble expansion rate in sec^-1.
 
 /* Use the Hubble rate from CAMB */
 
-extern double dtauda_(double *);
+extern double exported_dtauda(double *);
 
 double rec_HubbleRate(REC_COSMOPARAMS *cosmo, double z) {
   double a;
 
   a = 1./(1.+z);
   /* conversion from d tau/ da in Mpc to H(z) in 1/s */
-  return 1./(a*a)/dtauda_(&a) /3.085678e22 * 2.99792458e8;
+  return 1./(a*a)/exported_dtauda(&a) /3.085678e22 * 2.99792458e8;
+}
+
+void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const double* OmegaN, 
+         const double* Omegav, const double* h0inp, const double* tcmb, const double* yp, const double* num_nu, double *xe, double *Tm, const double* sum_mnu) {
+  
+  HYREC_DATA rec_data;
+
+  double zmax = 8000.;
+  double zmin = 0.;
+  double h = *h0inp/100.;
+  double h2 = h*h;
+  rec_data.path_to_hyrec = "../HyRec";
+  hyrec_allocate(&rec_data, zmax, zmin);
+  rec_data.cosmo->h = h;
+  rec_data.cosmo->T0 = *tcmb;
+  rec_data.cosmo->obh2 = *OmegaB * h2;
+  rec_data.cosmo->omh2 = (*OmegaB + *OmegaC) * h2;
+  rec_data.cosmo->orh2  = 4.48162687719e-7 * pow(*tcmb,4.) *(1. + 0.227107317660239* *num_nu);
+  rec_data.cosmo->okh2 = ( 1 - *OmegaC - *OmegaB - *Omegav - *OmegaN) * h2;
+  rec_data.cosmo->odeh2 = *Omegav * h2;
+  rec_data.cosmo->onuh2 = *OmegaN * h2;
+  rec_data.cosmo->w0 = -1;  /* not actually used since those are needed only in Hubble rate, */
+  rec_data.cosmo->wa = 0;   /* which is provided directly from CAMB                          */
+  rec_data.cosmo->Y = *yp;
+  rec_data.cosmo->Nnueff = *num_nu;  /* effective number of species of massless neutrino */
+  rec_data.cosmo->fsR = rec_data.cosmo->meR = 1.;   /* Default: today's values */
+
+
+  rec_get_cosmoparam(stdin, stderr, rec_data.cosmo, &rec_data.error, rec_data.error_message);
+  hyrec_compute(&rec_data, MODEL);
+  if (rec_data.error == 1) fprintf(stderr,"%s\n",rec_data.error_message);
+  else {
+      double z = zmax;
+      char file[200];
+      FILE *fout;
+      fout = fopen("output_xe.dat", "a");
+  	  while (z > zmin) {
+	    fprintf(fout, "%f %1.10E %1.10E\n",z,hyrec_xe(z, &rec_data),hyrec_Tm(z, &rec_data));
+		z -= 1.;
+	  }
+      fclose(fout);
+  }
+  hyrec_free(&rec_data);
+  return 0;
+
+
+printf("%e\n",*sum_mnu);
+  double h2 = *h0inp/100.;
+  h2 =h2*h2;
+  param.T0 = *tcmb;
+  param.obh2 = *OmegaB * h2;
+  param.ocbh2 = (*OmegaB + *OmegaC) * h2;
+  param.okh2 = ( 1 - *OmegaC - *OmegaB - *Omegav - *OmegaN) * h2;
+  param.odeh2 = *Omegav * h2;
+  param.w0=-1; /* not actually used */
+  param.wa=0;
+  param.Y = *yp;
+  param.Nnueff = *num_nu;
+  param.fsR = param.meR = 1.;  /*** Default: today's values ***/
+  
+  rec_set_derived_params(&param);
+
+  if (firstTime == 0) {
+   hyrec_init();
+   firstTime=1;
+   logstart = -log(1.+ZSTART);
+   xe_output          = create_1D_array(param.nz);
+   tm_output          = create_1D_array(param.nz);
+  }
+  Dfnu_hist          = create_2D_array(NVIRT, param.nzrt);
+  Dfminus_Ly_hist[0] = create_1D_array(param.nzrt);        /* Ly-alpha */
+  Dfminus_Ly_hist[1] = create_1D_array(param.nzrt);        /* Ly-beta  */
+  Dfminus_Ly_hist[2] = create_1D_array(param.nzrt);        /* Ly-gamma */
+  //rec_build_history(&param, &rate_table, &twog_params, xe_output, tm_output,Dfnu_hist, Dfminus_Ly_hist);
+  rec_build_history(&param, &rate_table, &twog_params, xe, Tm, Dfnu_hist, Dfminus_Ly_hist);
+  
+  free(rate_table.logTR_tab);
+  free(rate_table.TM_TR_tab);
+  free_2D_array(rate_table.logAlpha_tab[0], NTM);
+  free_2D_array(rate_table.logAlpha_tab[1], NTM);
+  free(rate_table.logR2p2s_tab);
+  //free(xe_output);
+  //free(tm_output);
+  free_2D_array(Dfnu_hist, NVIRT);
+  free(Dfminus_Ly_hist[0]);
+  free(Dfminus_Ly_hist[1]);
+  free(Dfminus_Ly_hist[2]);
+}
+
+double hyrec_xe_(double* a, double *xe){
+//double hyrec_xe_(double* a){
+ double loga = log(*a);
+ if (loga < logstart) {
+  return xe[0];
+ }
+ return rec_interp1d(logstart, DLNA, xe, param.nz, loga);
+}
+
+double hyrec_tm_(double* a, double *tm){
+//double hyrec_tm_(double* a){
+ double loga = log(*a);
+ if (loga < logstart) {
+  return tm[0];
+ }
+ return rec_interp1d(logstart, DLNA, tm, param.nz, loga);
 }
 
 #else
@@ -361,12 +466,12 @@ void rec_xH1_stiff(int model, REC_COSMOPARAMS *cosmo, double z, double xHeII, do
   }
   
   dxH1sdlna_Saha = -rec_dxHIIdlna(model_stiff, xHIISaha + xHeII, xHIISaha, nH, H, T, T, atomic, rad, fit, 
-                   iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
+                   iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->Nnueff, cosmo->YHe, cosmo->Nmnu);
   Dxe            = 0.01*xH1sSaha;
   DdxH1sdlna_DxH1s = (rec_dxHIIdlna(model_stiff, xHIISaha+Dxe + xHeII, xHIISaha+Dxe, nH, H, T, T, atomic, rad, fit,
-                      iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann)
+                      iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->Nnueff, cosmo->YHe, cosmo->Nmnu)
                     -rec_dxHIIdlna(model_stiff, xHIISaha-Dxe + xHeII, xHIISaha-Dxe, nH, H, T, T, atomic, rad, fit,
-                      iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann))/2./Dxe;
+                      iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->Nnueff, cosmo->YHe, cosmo->Nmnu))/2./Dxe;
 
   *xH1 = xH1sSaha + (dxH1sSaha_dlna - dxH1sdlna_Saha)/DdxH1sdlna_DxH1s;
   
@@ -376,7 +481,7 @@ void rec_xH1_stiff(int model, REC_COSMOPARAMS *cosmo, double z, double xHeII, do
 
   /* Update photon population when MODEL = FULL */
   if (model == 3) nothing = -rec_dxHIIdlna(model, xHeII + 1.-*xH1, 1.-*xH1, nH, H, T, T,
-  		                      atomic, rad, fit, iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu,cosmo->Nmnu, cosmo->inj_params->pann);
+  		                      atomic, rad, fit, iz_rad, z, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->Nnueff, cosmo->YHe, cosmo->Nmnu);
 
   if (*xH1 < 0. || *xH1 != *xH1) {
     sprintf(sub_message, "xH1 < 0 in rec_xH1_stiff: at z = %f, xH1 = %E\n", z, *xH1);
@@ -431,7 +536,7 @@ void get_rec_next2_HHe(int model, REC_COSMOPARAMS *cosmo, double z_in, double Tm
   /* Otherwise use second-order explicit solver */
   else {
 	  dxHIIdlna = rec_dxHIIdlna(model, xe, 1.-(*xH1), nH, H, kBoltz*Tm, TR, atomic, rad, fit,
-  			    iz_rad, z_in, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
+  			    iz_rad, z_in, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->Nnueff, cosmo->YHe, cosmo->Nmnu);
 	  *xH1 -= DLNA * hyrec_integrator(dxHIIdlna, dxHIIdlna_prev, z_in);
   }
 
@@ -486,8 +591,8 @@ void rec_get_xe_next1_H(int model, REC_COSMOPARAMS *cosmo, double z_in, double x
   }
   /* Otherwise use second-order explicit solver */
   else {
-	dxedlna = rec_dxHIIdlna(model, xe_in, xe_in, nH, H, kBoltz*Tm_in, TR, atomic,
-	            rad, fit, iz_rad, z_in, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
+	dxedlna = rec_dxHIIdlna(model, xe_in, xe_in, nH, H, kBoltz*Tm_in, TR, atomic, rad, fit, iz_rad, z_in, cosmo->fsR, cosmo->meR, 
+	                        ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->Nnueff, cosmo->YHe, cosmo->Nmnu);
 	*xe_out = xe_in + DLNA * hyrec_integrator(dxedlna, dxedlna_prev, z_in);
   }
   
@@ -538,8 +643,8 @@ void rec_get_xe_next2_HTm(int model, REC_COSMOPARAMS *cosmo,
 
   if (TR/cosmo->fsR/cosmo->fsR/cosmo->meR <= TR_MIN
       || kBoltz*Tm_in/TR <= TM_TR_MIN) model = PEEBLES;
-  dxedlna = rec_dxHIIdlna(model, xe_in, xe_in, nH, H, kBoltz*Tm_in, TR, atomic,
-			  rad, fit, iz_rad, z_in, cosmo->fsR, cosmo->meR, ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->onuh2, cosmo->Nnueff, cosmo->YHe, cosmo->mnu, cosmo->Nmnu, cosmo->inj_params->pann);
+  dxedlna = rec_dxHIIdlna(model, xe_in, xe_in, nH, H, kBoltz*Tm_in, TR, atomic, rad, fit, iz_rad, z_in, cosmo->fsR, cosmo->meR,
+                          ion, exclya, error, error_message, cosmo->ocbh2, cosmo->obh2, cosmo->Nnueff, cosmo->YHe, cosmo->Nmnu);
   
   dTmdlna = rec_dTmdlna(z_in, xe_in, Tm_in, cosmo, dEdtdV, H);
   if ( z_in < 600){
