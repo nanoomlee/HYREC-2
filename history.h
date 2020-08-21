@@ -32,7 +32,7 @@
 #define DLNT_MAX         5e-4       /* Use the steady-state approximation for Tm as long as 1-Tm/Tr < DLNT_MAX, then switch to ODE integration */
 
 
-/* Structure for HyRec internal parameters */ 
+/* Structure for HYREC-2 internal parameters */ 
 
 typedef struct {
   double h;                                 /* Hubble constant */

@@ -919,7 +919,7 @@ char* rec_build_history(int model, double zstart, double zend,
 
 
 /***********************************************************
-Function to allocate and initialize HyRec internal tables
+Function to allocate and initialize HYREC-2 internal tables
 Note that path_to_hyrec in HYREC_DATA should be defined first
 before calling hyrec_allocate().
 ***********************************************************/
@@ -931,7 +931,7 @@ void hyrec_allocate(HYREC_DATA *data, double zmax, double zmin) {
   
   data->error = 0;
   data->error_message=malloc(SIZE_ErrorM);
-  sprintf(data->error_message, "**** ERROR HAS OCCURRED in HyRec ****\n");
+  sprintf(data->error_message, "**** ERROR HAS OCCURRED in HYREC-2 ****\n");
   
   data->zmax = (zmax > 3000.? zmax : 3000.);
   data->zmin = zmin;
@@ -975,8 +975,8 @@ Compute a recombination history given input cosmological parameters
 ********************************************************************/
 
 void hyrec_compute(HYREC_DATA *data, int model){
-  /* if Hubble_flag[0]=-1., HyRec uses its own Hubble rate.
-  When HyRec is included in CLASS, the Hubble rate should be given from CLASS.
+  /* if Hubble_flag[0]=-1., HYREC-2 uses its own Hubble rate.
+  When HYREC-2 is included in CLASS, the Hubble rate should be given from CLASS.
   In that case, rec_build_history() would be used directly not this function, hyrec_compute(). */
   double Hubble_flag[1];
   Hubble_flag[0] = -1.;
