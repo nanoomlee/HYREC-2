@@ -3,6 +3,7 @@
 0.0494142797907188
 0.31242079216478097
 0.
+-1 0
 1.
 0.06
 0.
@@ -36,6 +37,7 @@ All parameters must be present
 0.04     = Omega_b                   baryon density parameter
 0.26     = Omega_cb                   matter (baryon + CDM) density parameter
 0.       = Omega_k                   curvature density parameter   -- Omega_Lambda is deduced from these
+-1, 0    = w0, wa					 dark energy equation of state parameters
 1.       = Nmnu						 number of massive neutrino
 0.06     = mnu1						 mass of the first neutrino    -- Massive ones should come first
 0.		 = mnu2                      mass of the second neutrino

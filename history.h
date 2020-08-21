@@ -38,6 +38,7 @@ typedef struct {
   double h;                                 /* Hubble constant */
   double T0;                                /* CMB temperature today in K*/
   double obh2, ocbh2, odeh2, okh2, orh2, onuh2;     /* density parameters */ 
+  double w0, wa;                                    /* Dark energy equation of state parameters */
   double Nmnu, Nnueff;                             /* effective number of neutrinos */
   double mnu[3];                                   /* neutrino masses */
   double fHe;                               /* Helium fraction by number */

@@ -181,12 +181,13 @@ double rec_HubbleRate(REC_COSMOPARAMS *cosmo, double z, int *error, char error_m
 		   + 2.05298*0.0457584*pow(y,3.47446-1.))/(1.+0.0457584*pow(y,3.47446))*(3.45e-8*Tnu0*Tnu0*Tnu0*Tnu0)*5.6822*2;
 	   }   
    }
-   
+  
+
    /* Total density parameter, including curvature */
    double rho = cosmo->ocbh2 /a/a/a     /* Matter (baryon + CDM) */
               + cosmo->okh2 /a/a       /* Curvature */
-              + cosmo->odeh2           /* Dark energy */
-              + cosmo->orh2 /a/a/a/a   /* Radiation (photons + massless neutrinos) */
+              + cosmo->odeh2 * pow(1./a, 3*(1+cosmo->w0)) * exp(3*cosmo->wa* (log(1./a)-1.+a))  /* Dark energy */
+			  + cosmo->orh2 /a/a/a/a   /* Radiation (photons + massless neutrinos) */
               + cosmo->onuh2 /a/a/a/a; /* Massive neutrinos */
    /* Conversion to Hubble rate in sec-1 */
    
@@ -213,6 +214,8 @@ void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param, int *erro
   fscanf(fin, "%lg", &(Omega_cb));
   if (fout!=NULL) fprintf(fout, "Enter curvature, Omega_k: \n");
   fscanf(fin, "%lg", &(Omega_k));
+  if (fout!=NULL) fprintf(fout, "Enter dark energy equation of state parameters, w wa: ");
+  fscanf(fin, "%lg %lg", &(param->w0), &(param->wa));
   
   if (fout!=NULL) fprintf(fout, "Enter number of massive neutrino species, Nmnu: \n");
   fscanf(fin, "%lg", &(param->Nmnu));
