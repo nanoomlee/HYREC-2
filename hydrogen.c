@@ -248,7 +248,6 @@ void allocate_and_read_fit(FIT_FUNC *fit, int *error, char *path_to_hyrec, char 
   fit_file = malloc(SIZE_InputFile);
   strcat(fit_file, path_to_hyrec);
   strcat(fit_file, FIT_FILE);
-  printf("%s\n",fit_file);
 
   FILE *fA = fopen(fit_file, "r");
   if (fA == NULL) {
