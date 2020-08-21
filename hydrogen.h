@@ -96,12 +96,11 @@ double rec_TLA_dxHIIdlna(double xe, double xHII, double nH, double H, double TM,
 
 /* Higher-resolution tables  */
 /*
-#define TWOG_FILE_CLASS "external/HyRec2012/two_photon_tables_hires.dat" 
+#define TWOG_FILE_CLASS "two_photon_tables_hires.dat" 
 #define NSUBLYA  408 
 #define NSUBLYB  1323 
 #define NVIRT    1493 
 #define NDIFF    300 
-//#define DLNA    8.47e-5 
 #define DLNA    1.e-7
 */
 /**** Structure containing all atomic data for hydrogen ****/
