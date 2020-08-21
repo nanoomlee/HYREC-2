@@ -20,6 +20,7 @@
 0.
 0.
 0.
+1.
 
 1.
 0.
@@ -47,7 +48,15 @@ All parameters must be present
 
 1.       = alpha(rec)/alpha(today)   ratio of fine structure constant at recombination to today's value
 1.       = me(rec)/me(today)         ratio of electron mass at recombination to today's value
+
 0.       = pann = f<sigma v>/m_DM    dark matter annihilation parameter, in cm^3/s/GeV
+0.       = pann_halo
+0.       = ann_z
+0.       = ann_zmax
+0.       = ann_zmin
+0.       = ann_var
+0.       = ann_z_halo
+1.       = on_the_spot
 
 1.       = Mpbh                      primordial black hole mass in solar masses
 0.       = fpbh                      fraction of dark matter made of PBHs 
