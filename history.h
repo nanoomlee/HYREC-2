@@ -46,7 +46,7 @@ typedef struct {
   double YHe;                               /* Helium fraction */ 
   double fsR, meR;              /* fine-structure constant alpha/alpha(today) 
                                     and me/me(today) (Added April 2012)*/
-  double zstart, zend, dlna, nz; 
+  double dlna, nz; 
 
   INJ_PARAMS *inj_params;     /* Structure containing all Energy-injection parameters */
 
