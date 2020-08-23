@@ -79,20 +79,34 @@ void hyrec_init() {
 }
 
 void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const double* OmegaN, 
-         const double* Omegav, const double* h0inp, const double* tcmb, const double* yp, const double* num_nu, double *xe, double *Tm) {
+         const double* Omegav, const double* h0inp, const double* tcmb, const double* yp, const double* num_nu, double *xe, double *Tm, long int* nz) {
 
   double zmax = 8000.;
   double zmin = 0.;
   double h = *h0inp/100.;
   double h2 = h*h;
-  int error;
+  char sub_message[1024];
   
   if (firstTime == 0) {
     hyrec_init();
 	firstTime=1;
     logstart = -log(1.+zmax);
-	Nz = rec_data.Nz;
+    Nz = rec_data.Nz;
   }
+
+  if (*nz != Nz) {
+    rec_data.error = 1;
+    sprintf(sub_message, "  called from rec_build_history_camb_\n");
+    strcat(sub_message, "  Wrong number of redshifts is given from CAMB\n");
+    strcat(sub_message, "  For the default SWIFT model, Nz should be 2248 in hyrec.f90\n");
+    strcat(sub_message, "  For the rest of models in HYREC-2, Nz should be 105859 in hyrec.f90\n");
+    strcat(sub_message, "  Check the line 18 of history.h and line 20 of hyrec.f90\n");
+    strcat(rec_data.error_message, sub_message);
+	printf("\n%s\n",rec_data.error_message);
+    hyrec_free(&rec_data);
+	exit(1);
+ }
+  
   rec_data.cosmo->h = h;
   rec_data.cosmo->T0 = *tcmb;
   rec_data.cosmo->obh2 = *OmegaB * h2;
@@ -136,20 +150,13 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
   
   rec_build_history(MODEL, rec_data.zmax, rec_data.zmin, rec_data.cosmo, rec_data.atomic,
 		    rec_data.rad, rec_data.fit, xe, Tm, Hubble_flag, rec_data.Nz, &rec_data.error, rec_data.error_message);
-  error = rec_data.error;
   
-  free_atomic(rec_data.atomic);
-  free(rec_data.cosmo->inj_params);
-  free(rec_data.cosmo);
-  free(rec_data.error_message);
-  if (MODEL == 3) free_radiation(rec_data.rad);
-  free(rec_data.rad);
-  free_fit(rec_data.fit);
-  
-  if (error == 1) {
+  if (rec_data.error == 1) {
 	  printf("\n%s\n",rec_data.error_message);
+      hyrec_free(&rec_data);
 	  exit(1);
   }
+  hyrec_free(&rec_data);
 }
 
 
@@ -289,7 +296,7 @@ void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param, int *erro
   fscanf(fin, "%lg", &(param->inj_params->fpbh));
   
   param->inj_params->odmh2      = param->ocbh2 - param->obh2;
-  printf("%e %e %e %e %e %e %e %d\n", param->inj_params->pann,param->inj_params->pann_halo,param->inj_params->ann_z,param->inj_params->ann_zmax,param->inj_params->ann_zmin,param->inj_params->ann_var,param->inj_params->ann_z_halo,param->inj_params->on_the_spot); 
+  
   if (MODEL == 4) param->dlna = DLNA_SWIFT;
   else param->dlna = DLNA_HYREC;
 
