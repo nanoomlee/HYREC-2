@@ -100,7 +100,7 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
     strcat(sub_message, "  Wrong number of redshifts is given from CAMB\n");
     strcat(sub_message, "  For the default SWIFT model, Nz should be 2248 in hyrec.f90\n");
     strcat(sub_message, "  For the rest of models in HYREC-2, Nz should be 105859 in hyrec.f90\n");
-    strcat(sub_message, "  Check the line 18 of history.h and line 20 of hyrec.f90\n");
+    strcat(sub_message, "  Check the line 18 of history.h and line 22 of hyrec.f90\n");
     strcat(rec_data.error_message, sub_message);
 	printf("\n%s\n",rec_data.error_message);
     hyrec_free(&rec_data);
