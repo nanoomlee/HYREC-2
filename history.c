@@ -78,8 +78,8 @@ void hyrec_init() {
   free(buffer);
 }
 
-void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const double* OmegaN, 
-         const double* Omegav, const double* h0inp, const double* tcmb, const double* yp, const double* num_nu, double *xe, double *Tm, long int* nz) {
+void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const double* h0inp, const double* tcmb, 
+                             const double* yp, const double* num_nu, double *xe, double *Tm, long int* nz) {
 
   double zmax = 8000.;
   double zmin = 0.;
@@ -107,16 +107,13 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
 	exit(1);
  }
   
+  /* Defining HYREC-2 parameters from CAMB */
+  /* Note that there are some parameters which don't have to be defined here 
+     since Hubble rate is directly given from CAMB: orh2, okh2, odeh2, onuh2, w0, wa. */
   rec_data.cosmo->h = h;
   rec_data.cosmo->T0 = *tcmb;
   rec_data.cosmo->obh2 = *OmegaB * h2;
   rec_data.cosmo->ocbh2 = (*OmegaB + *OmegaC) * h2;
-  rec_data.cosmo->orh2  = 4.48162687719e-7 * pow(*tcmb,4.) *(1. + 0.227107317660239* *num_nu);
-  rec_data.cosmo->okh2 = ( 1 - *OmegaC - *OmegaB - *Omegav - *OmegaN) * h2;
-  rec_data.cosmo->odeh2 = *Omegav * h2;
-  rec_data.cosmo->onuh2 = *OmegaN * h2;
-  rec_data.cosmo->w0 = -1;  /* not actually used since those are needed only in Hubble rate, */
-  rec_data.cosmo->wa = 0;   /* which is provided directly from CAMB                          */
   rec_data.cosmo->YHe = *yp;
   rec_data.cosmo->Nnueff = *num_nu;  /* effective number of species of massless neutrino */
   rec_data.cosmo->fsR = rec_data.cosmo->meR = 1.;   /* Default: today's values */
