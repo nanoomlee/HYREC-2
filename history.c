@@ -938,7 +938,7 @@ void hyrec_allocate(HYREC_DATA *data, double zmax, double zmin) {
   
   data->error = 0;
   data->error_message=malloc(SIZE_ErrorM);
-  sprintf(data->error_message, "**** ERROR HAS OCCURRED in HYREC-2 ****\n");
+  sprintf(data->error_message, "\n**** ERROR HAS OCCURRED in HYREC-2 ****\n");
   
   data->zmax = (zmax > 3000.? zmax : 3000.);
   data->zmin = zmin;
