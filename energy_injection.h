@@ -11,7 +11,9 @@ typedef struct {
 
   double ann_z, ann_zmax, ann_zmin, ann_var; /* Parameters for the variation of pann(z) */
   double ann_z_halo;                         /* Characteristic redshift for annihilation in haloes */
-    
+  
+  double decay;
+
   double Mpbh, fpbh;           /* Mass and fraction of DM made of primordial black holes */
 
   int on_the_spot;            /* if set to 1 assume energy deposition rate = injection rate */
