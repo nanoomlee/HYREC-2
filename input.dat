@@ -21,6 +21,7 @@
 0.
 0.
 1.
+0.
 
 1.
 0.
@@ -57,6 +58,7 @@ All parameters must be present
 0.       = ann_var
 0.       = ann_z_halo
 1.       = on_the_spot
+0.       = decay
 
 1.       = Mpbh                      primordial black hole mass in solar masses
 0.       = fpbh                      fraction of dark matter made of PBHs 
