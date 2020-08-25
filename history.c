@@ -61,7 +61,6 @@ double rec_HubbleRate(REC_COSMOPARAMS *cosmo, double z, int *error, char error_m
 }
 
 HYREC_DATA rec_data;
-int firstTime = 0;
 double logstart, dlna;
 long int Nz;
 
@@ -86,14 +85,11 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
   double h = *h0inp/100.;
   double h2 = h*h;
   char sub_message[1024];
-  
-  if (firstTime == 0) {
-    hyrec_init();
-	firstTime=1;
-    logstart = -log(1.+zmax);
-    Nz = rec_data.Nz;
-  }
 
+  hyrec_init();
+  logstart = -log(1.+zmax);
+  Nz = rec_data.Nz;
+  
   if (*nz != Nz) {
     rec_data.error = 1;
     sprintf(sub_message, "  called from rec_build_history_camb_\n");
@@ -133,6 +129,7 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
   rec_data.cosmo->inj_params->ann_var = 1.;
   rec_data.cosmo->inj_params->ann_z_halo = 1.;
   rec_data.cosmo->inj_params->on_the_spot = 1;
+  rec_data.cosmo->inj_params->decay = 0.;
   
   /* Primodial black hole parameters */
   rec_data.cosmo->inj_params->Mpbh = 1.;
@@ -196,7 +193,6 @@ double rec_HubbleRate(REC_COSMOPARAMS *cosmo, double z, int *error, char error_m
 		   + 2.05298*0.0457584*pow(y,3.47446-1.))/(1.+0.0457584*pow(y,3.47446))*(3.45e-8*Tnu0*Tnu0*Tnu0*Tnu0)*5.6822*2;
 	   }   
    }
-  
 
    /* Total density parameter, including curvature */
    double rho = cosmo->ocbh2 /a/a/a     /* Matter (baryon + CDM) */
@@ -286,6 +282,8 @@ void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param, int *erro
   fscanf(fin, "%lg", &(param->inj_params->ann_z_halo));
   if (fout!=NULL) fprintf(fout, "one_the_spot: \n");
   fscanf(fin, "%d", &(param->inj_params->on_the_spot));
+  if (fout!=NULL) fprintf(fout, "decay: \n");
+  fscanf(fin, "%lg", &(param->inj_params->decay));
 
   if (fout!=NULL) fprintf(fout, "Mpbh: \n");
   fscanf(fin, "%lg", &(param->inj_params->Mpbh));
