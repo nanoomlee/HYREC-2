@@ -63,13 +63,14 @@ double rec_HubbleRate(REC_COSMOPARAMS *cosmo, double z, int *error, char error_m
 HYREC_DATA rec_data;
 double logstart, dlna;
 long int Nz;
+int firstTime=0;
 
 void hyrec_init() {
    /* Allocate spaces for hyrec data */
   double zmax = 8000.;
   double zmin = 0.;
-  char *buffer = (char *) malloc (1024);
-  getcwd (buffer, 1024);
+  char *buffer = (char *) malloc (4096);
+  getcwd (buffer, 4096);
   chdir(HYRECPATH);
   rec_data.path_to_hyrec = "";
   hyrec_allocate(&rec_data, zmax, zmin);
@@ -85,10 +86,14 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
   double h = *h0inp/100.;
   double h2 = h*h;
   char sub_message[1024];
-
-  hyrec_init();
-  logstart = -log(1.+zmax);
-  Nz = rec_data.Nz;
+  
+  /* To load tables only once */
+  if (firstTime==0){
+    hyrec_init();
+    logstart = -log(1.+zmax);
+    Nz = rec_data.Nz;
+	firstTime =1;
+  }
   
   if (*nz != Nz) {
     rec_data.error = 1;
@@ -147,10 +152,8 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
   
   if (rec_data.error == 1) {
 	  printf("\n%s\n",rec_data.error_message);
-      hyrec_free(&rec_data);
 	  exit(1);
   }
-  hyrec_free(&rec_data);
 }
 
 
