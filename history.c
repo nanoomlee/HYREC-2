@@ -741,7 +741,7 @@ char* rec_build_history(int model, double zstart, double zend,
   quasi_eq = 1;                          /* Start with post-saha expansion */    
   
   dxHeIIdlna_prev_sub[1] = dxHeIIdlna_prev[1]; 
-  dxHeIIdlna_prev_sub[1] = dxHeIIdlna_prev[1]; 
+  dxHeIIdlna_prev_sub[0] = dxHeIIdlna_prev[0]; 
   xHeII_prev[3] = xHeII;
   xHeII_prev[2] = xHeII;
   xHeII_prev[1] = xHeII;
@@ -757,13 +757,13 @@ char* rec_build_history(int model, double zstart, double zend,
            z  = (1.+zstart)*exp(-DLNA*(iz-1+(flag+1)/10.)) - 1.;
            xH1           = rec_saha_xH1s(xHeII, cosmo->nH0, cosmo->T0, z, cosmo->fsR, cosmo->meR);
 		   xe_i = 1.-xH1 + xHeII;
-		   
-           if (hubble_array[0]==-1.) H  = rec_HubbleRate(cosmo, z, error, error_message);
+           
+		   if (hubble_array[0]==-1.) H  = rec_HubbleRate(cosmo, z, error, error_message);
            else H = rec_interp1d(.0, dz, hubble_array, Nz, z, error, error_message);
 		   Tm_i = rec_Tmss(z, xe_i, cosmo, 0., H);
 	       }
 	  xe_output[iz] = xe_i; Tm_output[iz] = Tm_i;
-      
+	  
 	  xHeII_prev[3] = xHeII_prev[2];
 	  xHeII_prev[2] = xHeII_prev[1];
 	  xHeII_prev[1] = xHeII_prev[0];
