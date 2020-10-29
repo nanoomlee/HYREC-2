@@ -115,7 +115,7 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
   rec_data.cosmo->obh2 = *OmegaB * h2;
   rec_data.cosmo->ocbh2 = (*OmegaB + *OmegaC) * h2;
   rec_data.cosmo->YHe = *yp;
-  rec_data.cosmo->Nnueff = *num_nu;  /* effective number of species of massless neutrino */
+  rec_data.cosmo->Nureff = *num_nu;  /* effective number of species of massless neutrino */
   rec_data.cosmo->fsR = rec_data.cosmo->meR = 1.;   /* Default: today's values */
   rec_data.cosmo->nH0 = 11.223846333047e-6*rec_data.cosmo->obh2*(1.-rec_data.cosmo->YHe);  // number density of hudrogen today in cm-3 
   rec_data.cosmo->fHe = rec_data.cosmo->YHe/(1.-rec_data.cosmo->YHe)/3.97153;              // abundance of helium by number 
@@ -236,14 +236,14 @@ void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param) {
   if (fout!=NULL) fprintf(fout, "Enter primordial helium mass fraction, Y: \n");
   fscanf(fin, "%lg", &(param->YHe));
   if (fout!=NULL) fprintf(fout, "Enter effective number of massless neutrino species, N_nu_eff: \n");
-  fscanf(fin, "%lg", &(param->Nnueff));
+  fscanf(fin, "%lg", &(param->Nureff));
  
   if (fout!=NULL) fprintf(fout, "ratio of fine structure constant at recombination to today's value, fsR: \n");
   fscanf(fin, "%lg", &(param->fsR));
   if (fout!=NULL) fprintf(fout, "ratio of electron mass at recombination to today's value, meR: \n");
   fscanf(fin, "%lg", &(param->meR));
   
-  param->orh2  = 4.48162687719e-7 *param->T0*param->T0*param->T0*param->T0 *(1. + 0.227107317660239 *param->Nnueff);
+  param->orh2  = 4.48162687719e-7 *param->T0*param->T0*param->T0*param->T0 *(1. + 0.227107317660239 *param->Nureff);
   param->ocbh2  = Omega_cb *param->h*param->h;
   param->obh2  = Omega_b *param->h*param->h;
   param->okh2  = Omega_k *param->h*param->h;
