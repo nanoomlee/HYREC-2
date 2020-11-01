@@ -51,7 +51,7 @@ Hubble expansion rate in sec^-1.
 
 extern double exported_dtauda(double *);
 
-double rec_HubbleRate(REC_COSMOPARAMS *cosmo, double z, int *error, char error_message[SIZE_ErrorM]) {
+double rec_HubbleRate(REC_COSMOPARAMS *cosmo, double z) {
   double a;
 
   a = 1./(1.+z);
@@ -93,7 +93,7 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
     Nz = rec_data.Nz;
     firstTime =1;
   }
-
+  
   if (*nz != Nz) {
     rec_data.error = 1;
     sprintf(sub_message, "  called from rec_build_history_camb_\n");
@@ -146,7 +146,9 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
   double Hubble_flag[1];
   Hubble_flag[0] = -1.;
 
-  rec_build_history(rec_data, MODEL, Hubble_flag);
+  rec_data.xe_output = xe; rec_data.Tm_output = Tm;
+  
+  rec_build_history(&rec_data, MODEL, Hubble_flag);
   if (rec_data.error == 1) {
     printf("\n%s\n",rec_data.error_message);
     exit(1);
