@@ -659,7 +659,7 @@ void rec_get_xe_next2_HTm(HYREC_DATA *data, int model, double z_in, long iz, dou
     2) the universe is going to be reionized around that epoch */
 
   if (TR/cosmo->fsR/cosmo->fsR/cosmo->meR <= TR_MIN
-     || kBoltz*Tm_in/TR <= TM_TR_MIN) model = PEEBLES;
+     || kBoltz*Tm_in/TR <= T_RATIO_MIN) model = PEEBLES;
     dxedlna = rec_dxHIIdlna(data, model, xe_in, xe_in, nH, H, kBoltz*Tm_in, TR, iz_rad, z_in);
 
   dTmdlna = rec_dTmdlna(z_in, xe_in, Tm_in, cosmo, dEdtdV, H);
