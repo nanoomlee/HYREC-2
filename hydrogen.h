@@ -64,7 +64,7 @@
 #define TR_MIN 0.004                                /* Minimum Tr in eV */
 #define TR_MAX 0.4                                  /* Maximum Tr in eV */
 #define NTR    100                                  /* Number of Tr values */
-#define T_RATIO_MIN 0.1                             /* T_RATIO can be either Tm/Tr or Tr/Tm */
+#define T_RATIO_MIN 0.1                             /* T_RATIO is min(Tm/Tr, Tr/Tm) */
 #define T_RATIO_MAX 1.0
 #define NTM 40
 
