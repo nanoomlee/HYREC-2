@@ -453,8 +453,12 @@ void rec_xH1_stiff(HYREC_DATA *data, int model, double z, double xHeII, double *
   int model_stiff;	// To use EMLA2p2s model for PostSaha in FULL and SWIFT mode
   char sub_message[128];
 
-  // Set model for rec_xH1_stiff. FULL mode uses EMLA2s2p for stiff. SWIFT mode uses EMLA2s2p for stiff when z > 1600.
+  // Set model for rec_xH1_stiff. FULL mode uses EMLA2s2p for stiff. 
+  // SWIFT mode uses EMLA2s2p for stiff when z is not in the range of redshifts for SWIFT fitting function.
   // Set DXHII_MAX_stiff parameter
+  
+  T = kBoltz*cosmo->T0 * (ainv=1.+z);
+  
   if (model == 3) {
     model_stiff = 2;
     DXHII_MAX_model = DXHII_MAX_FULL;
@@ -462,7 +466,7 @@ void rec_xH1_stiff(HYREC_DATA *data, int model, double z, double xHeII, double *
   else{
     model_stiff = model;
     if (model == 4){
-      if (z > 1600.) model_stiff = 2;
+      if (T/kBoltz/cosmo->fsR/cosmo->fsR/cosmo->meR > data->fit->swift_func[0][DKK_SIZE-1] ) model_stiff = 2;
     }
     DXHII_MAX_model = DXHII_MAX;
   }
@@ -470,7 +474,6 @@ void rec_xH1_stiff(HYREC_DATA *data, int model, double z, double xHeII, double *
   nH = cosmo->nH0 *cube(1.+z);
   xH1sSaha = rec_saha_xH1s(cosmo, z, xHeII);
   xHIISaha = 1.-xH1sSaha;
-  T        = kBoltz*cosmo->T0 * (ainv=1.+z);
 
   dxH1sSaha_dlna = (1.+z)*(rec_saha_xH1s(cosmo, z-0.5, xHeII)
                           -rec_saha_xH1s(cosmo, z+0.5, xHeII));

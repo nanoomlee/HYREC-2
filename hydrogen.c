@@ -454,12 +454,17 @@ double rec_swift_hyrec_dxHIIdlna(HYREC_DATA *data, double xe, double xHII, doubl
   interpolate_rates(Alpha, DAlpha, Beta, &R2p2s, TR, TM/TR, atomic, fsR, meR, error, data->error_message);
 
   RLya = LYA_FACT(fsR, meR) *H/nH/(1.-xHII);   // 8 PI H/(3 nH x1s lambda_Lya^3)
-  DK_K_fid = rec_interp1d(fit->swift_func[0][0], 10., fit->swift_func[1], DKK_SIZE, TR/kBoltz, error, data->error_message);
+  
+  if (TR/kBoltz > fit->swift_func[0][DKK_SIZE-1]) DK_K = 0.;
+  else {
+    DK_K_fid = rec_interp1d(fit->swift_func[0][0], 10., fit->swift_func[1], DKK_SIZE, TR/kBoltz, error, data->error_message);
 
-  for (i = 0; i < 3; i++) {
-    DK_K_fid = DK_K_fid + diff[i]*rec_interp1d(fit->swift_func[0][0], 10., fit->swift_func[i+2],
+    for (i = 0; i < 3; i++) {
+      DK_K_fid = DK_K_fid + diff[i]*rec_interp1d(fit->swift_func[0][0], 10., fit->swift_func[i+2],
                                                    DKK_SIZE, TR/kBoltz, error, data->error_message);
+    }
   }
+
   DK_K = DK_K_fid;
   fitted_RLya = RLya / (1.+DK_K);
   gamma_2s = Beta[0] + 3.*R2p2s + L2s_rescaled(fsR, meR);
@@ -1065,7 +1070,7 @@ double rec_dxHIIdlna(HYREC_DATA *data, int model, double xe, double xHII, double
     else {
       if (model == FULL) result = rec_HMLA_2photon_dxHIIdlna(data, xe, xHII, nH, H, TM, TR, iz, z);
       else if (model == SWIFT) {
-        if (TR/kBoltz < fit->swift_func[0][0]) result = rec_HMLA_dxHIIdlna(data, xe, xHII, nH, H, TM, TR);
+        if (TR/kBoltz/cosmo->fsR/cosmo->fsR/cosmo->meR < fit->swift_func[0][0]) result = rec_HMLA_dxHIIdlna(data, xe, xHII, nH, H, TM, TR);
         else result = rec_swift_hyrec_dxHIIdlna(data, xe, xHII, nH, H, TM, TR, z);
       }
     }
