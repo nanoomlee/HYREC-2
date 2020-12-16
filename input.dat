@@ -48,6 +48,7 @@ All parameters must be present
 3.046    = Neff                      total effective  number of neutrinos (massive + massless)
 
 1.       = alpha(rec)/alpha(today)   ratio of fine structure constant at recombination to today's value
+                                     If it's not 1, a smaller timestep might be needed. Decrease timestep in history.h if needed.
 1.       = me(rec)/me(today)         ratio of electron mass at recombination to today's value
 
 0.       = pann = f<sigma v>/m_DM    dark matter annihilation parameter, in cm^3/s/GeV
