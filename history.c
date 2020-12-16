@@ -9,7 +9,7 @@
 /*         Revision history:                                                                          */
 /*             - January 2020 : - added massive neutrino part in Hubble rate                          */
 /*                              - added new mode, SWIFT                                               */
-/*                              - separated DLNA and DXHII_MAX in two cases, MODEL = FULL or else     */
+/*                              - separated DLNA in two cases, MODEL = FULL or else     */
 /*                              - added error_massage control                                         */
 /*             -         2015: - added DM annihilation and 21 cm routines.                            */
 /*                             - changed cosmological parameters input form                           */
@@ -449,26 +449,23 @@ void rec_xH1_stiff(HYREC_DATA *data, int model, double z, double xHeII, double *
   REC_COSMOPARAMS *cosmo = data->cosmo;
   int *error = &data->error;
 
-  double ainv, xH1sSaha, xHIISaha, dxH1sSaha_dlna, dxH1sdlna_Saha, DdxH1sdlna_DxH1s, T, nH, Dxe, DXHII_MAX_model;
+  double ainv, xH1sSaha, xHIISaha, dxH1sSaha_dlna, dxH1sdlna_Saha, DdxH1sdlna_DxH1s, T, nH, Dxe;
   int model_stiff;	// To use EMLA2p2s model for PostSaha in FULL and SWIFT mode
   char sub_message[128];
 
   // Set model for rec_xH1_stiff. FULL mode uses EMLA2s2p for stiff. 
   // SWIFT mode uses EMLA2s2p for stiff when z is not in the range of redshifts for SWIFT fitting function.
-  // Set DXHII_MAX_stiff parameter
   
   T = kBoltz*cosmo->T0 * (ainv=1.+z);
   
   if (model == 3) {
     model_stiff = 2;
-    DXHII_MAX_model = DXHII_MAX_FULL;
   }
   else{
     model_stiff = model;
     if (model == 4){
       if (T/kBoltz/cosmo->fsR/cosmo->fsR/cosmo->meR > data->fit->swift_func[0][DKK_SIZE-1] ) model_stiff = 2;
     }
-    DXHII_MAX_model = DXHII_MAX;
   }
 
   nH = cosmo->nH0 *cube(1.+z);
@@ -495,7 +492,7 @@ void rec_xH1_stiff(HYREC_DATA *data, int model, double z, double xHeII, double *
   *xH1 = xH1sSaha + (dxH1sSaha_dlna - dxH1sdlna_Saha)/DdxH1sdlna_DxH1s;
 
 
-  if (fabs(*xH1 - xH1sSaha) > DXHII_MAX_model)  data->quasi_eq = 0;
+  if (fabs(*xH1 - xH1sSaha) > DXHII_MAX)  data->quasi_eq = 0;
   //if (z<1700.) *stiff = 0;   /* Used when calculating the correction function for SWIFT mode. */
 
   /* Update photon population when MODEL = FULL */
