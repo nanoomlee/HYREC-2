@@ -960,12 +960,14 @@ void hyrec_free(HYREC_DATA *data) {
   free_atomic(data->atomic);
   free(data->cosmo->inj_params);
   free(data->cosmo);
+  free(data->atomic);
   free(data->xe_output);
   free(data->Tm_output);
   free(data->error_message);
   if (MODEL == 3) free_radiation(data->rad);
   free(data->rad);
   free_fit(data->fit);
+  free(data->fit);
 }
 
 /******************************************************************
