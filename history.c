@@ -9,7 +9,7 @@
 /*         Revision history:                                                                          */
 /*             - January 2020 : - added massive neutrino part in Hubble rate                          */
 /*                              - added new mode, SWIFT                                               */
-/*                              - separated DLNA in two cases, MODEL = FULL or else     */
+/*                              - separated DLNA in two cases, MODEL = FULL or else                   */
 /*                              - added error_massage control                                         */
 /*             -         2015: - added DM annihilation and 21 cm routines.                            */
 /*                             - changed cosmological parameters input form                           */
