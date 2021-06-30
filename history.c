@@ -616,7 +616,7 @@ void rec_get_xe_next1_H(HYREC_DATA *data, int model, double z_in, long iz, doubl
 
   // Test that the outcome is sensible
   if (*xe_out > 1. || *xe_out < 0. || *xe_out != *xe_out) {
-    sprintf(sub_message, "xe > 0 or xe < 0 in get_rec_next1_H at z = %E, xe = %E\n", z_out, *xe_out);
+    sprintf(sub_message, "xe > 1 or xe < 0 in get_rec_next1_H at z = %E, xe = %E\n", z_out, *xe_out);
     strcat(data->error_message, sub_message);
     *error = 1;
   }
