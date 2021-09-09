@@ -362,10 +362,7 @@ Output: change in x per dt
 double hyrec_integrator(double deriv, double deriv_prev[2], double z) {
   double result;
 
-  if (MODEL == FULL){
-    if (z > 20 && z < 1500) result = 23./12.*deriv -16./12. * deriv_prev[0] + 5./12. *deriv_prev[1];
-    else  result = 1.25 * deriv - 0.25 *deriv_prev[1];
-  }
+  if (MODEL == FULL) result = 1.25 * deriv - 0.25 *deriv_prev[1];
   else result = 23./12.*deriv -16./12. * deriv_prev[0] + 5./12. *deriv_prev[1];
 
   // update derivatives
