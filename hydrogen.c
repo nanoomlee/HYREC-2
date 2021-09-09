@@ -443,10 +443,10 @@ double rec_swift_hyrec_dxHIIdlna(HYREC_DATA *data, double xe, double xHII, doubl
   double T0fid_T0;
   if (*error == 1) return 0.;
 
-  T0fid_T0 = 2.7255 / (TR/kBoltz/(1.+z));
   ratio = TM/TR;
   rescale_T(&TR, fsR, meR);
   TM = ratio * TR;   // This way ensure that TM<=TR is preserved
+  T0fid_T0 = 2.7255 / (TR/kBoltz/(1.+z));
 
   /* The numbers in the following lines are fiducial parameters for correction function (Do not change) */
   diff[0] = (cosmo->ocbh2 - 0.14175)*pow(T0fid_T0,3);
