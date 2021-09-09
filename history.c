@@ -743,9 +743,10 @@ char* rec_build_history(HYREC_DATA *data, int model, double *hubble_array){
   xHeII_prev[1] = xHeII;
   xHeII_prev[0] = xHeII;
 
+  data->loop_after_quasi=1;
   for(; iz <= data->rad->iz_rad_0; iz++) {
 
-    if (model == SWIFT && data->quasi_eq == 0 && z > 2800.){
+    if (model == SWIFT && data->quasi_eq == 0 && data->loop_after_quasi == 1){
       xe_i = xe_output[iz-1]; Tm_i = Tm_output[iz-1];
       for (flag=0;flag<10;flag++) {
         rec_get_xe_next1_He(data, z, &xHeII, dxHeIIdlna_prev_sub, hubble_array, flag);
@@ -765,6 +766,8 @@ char* rec_build_history(HYREC_DATA *data, int model, double *hubble_array){
       xHeII_prev[0] = xHeII;
       dxHeIIdlna_prev[1] = (xHeII_prev[1] - xHeII_prev[3])/2./DLNA;
       dxHeIIdlna_prev[0] = (xHeII_prev[0] - xHeII_prev[2])/2./DLNA;
+
+      if (fabs(1-dxHeIIdlna_prev[1]/dxHeIIdlna_prev[0])<DXHEII_DIFF_MAX) data->loop_after_quasi = 0;
     }
     else{
       rec_get_xe_next1_He(data, z, &xHeII, dxHeIIdlna_prev, hubble_array, flag);
@@ -828,9 +831,10 @@ char* rec_build_history(HYREC_DATA *data, int model, double *hubble_array){
   ********/
   dxHIIdlna_prev_sub[1] = dxHIIdlna_prev[1];
   dxHIIdlna_prev_sub[0] = dxHIIdlna_prev[0];
-  for (; z >= 700. && fabs(1.-Tm_output[iz-1]/cosmo->T0/(1.+z)) < DLNT_MAX; iz++) {
+  data->loop_after_quasi = 1;
+  for (; z >= 0. && fabs(1.-Tm_output[iz-1]/cosmo->T0/(1.+z)) < DLNT_MAX; iz++) {
 
-    if (model == SWIFT &&z > 1500.){
+    if (model == SWIFT && data->loop_after_quasi == 1){
       xe_i = xe_output[iz-1]; Tm_i = Tm_output[iz-1];
       for (flag=0;flag<10;flag++) {
         rec_get_xe_next1_H(data, model, z, iz, xe_i, Tm_i, &xe_i, &Tm_i, dxHIIdlna_prev_sub, H, flag);
@@ -847,6 +851,8 @@ char* rec_build_history(HYREC_DATA *data, int model, double *hubble_array){
       xe_output[iz] = xe_i; Tm_output[iz] = Tm_i;
       dxHIIdlna_prev[1] = (xe_output[iz-1] - xe_output[iz-3])/2./DLNA;
       dxHIIdlna_prev[0] = (xe_output[iz] - xe_output[iz-2])/2./DLNA;
+
+      if (fabs(1-dxHIIdlna_prev[1]/dxHIIdlna_prev[0])<DXHII_DIFF_MAX) data->loop_after_quasi=0;
     }
 
     else{

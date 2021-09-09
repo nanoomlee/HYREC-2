@@ -21,9 +21,11 @@
 #define SIZE_ErrorM      2048
 
 #define DXHEII_MAX       1e-5       /* If xHeII - xHeII(Saha) < DXEHII_MAX, use post-Saha expansion for Helium. Lower value = higher accuracy. */
+#define DXHEII_DIFF_MAX  5e-2
 
 #define DXHII_MAX        3e-4       /* If xHII - xHII(Saha) < DXHII_MAX, use post-Saha expansion for Hydrogen. Switch to ODE integration after that.
                                     IMPORTANT: do not set to a lower value unless using a smaller time-step */
+#define DXHII_DIFF_MAX   5e-2
 
 #define XHEII_MIN        1e-6       /* Stop considering Helium recombination once xHeII < XHEII_MIN */
 //#define XHEII_MIN      1e-10      /* Used when calculating correction function in SWIFT mode */
