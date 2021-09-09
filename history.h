@@ -31,6 +31,7 @@
 //#define XHEII_MIN      1e-10      /* Used when calculating correction function in SWIFT mode */
 
 #define DLNT_MAX         5e-4       /* Use the steady-state approximation for Tm as long as 1-Tm/Tr < DLNT_MAX, then switch to ODE integration */
+#define DTM_DIFF_MAX     5e-2
 
 void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param);
 

@@ -168,6 +168,8 @@ typedef struct{
   double *Tm_output;
   int error;
   int quasi_eq;
+  int loop_after_quasi;
+  int Tm_evolve_implicit;
   char *error_message;
   char *path_to_hyrec;
   RADIATION *rad;

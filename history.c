@@ -660,17 +660,20 @@ void rec_get_xe_next2_HTm(HYREC_DATA *data, int model, double z_in, long iz, dou
     dxedlna = rec_dxHIIdlna(data, model, xe_in, xe_in, nH, H, kBoltz*Tm_in, TR, iz_rad, z_in);
 
   dTmdlna = rec_dTmdlna(z_in, xe_in, Tm_in, cosmo, dEdtdV, H);
-
-  if ( z_in < 600){
-    data->xe_output[iz] = xe_in + DLNA *hyrec_integrator(dxedlna, dxedlna_prev, z_in);
-    data->Tm_output[iz] = Tm_in + DLNA *hyrec_integrator(dTmdlna, dTmdlna_prev, z_in);
-  }
-  else {
+  
+  data->Tm_evolve_implicit = 1;
+  if (fabs(1-dTmdlna_prev[0]/dTmdlna)<DTM_DIFF_MAX) data->Tm_evolve_implicit = 0;
+  if (data->Tm_evolve_implicit == 1){
     dTmdlna_prev[0] = dTmdlna;
     dTmdlna_prev[1] = dTmdlna_prev[0];
     data->xe_output[iz] = xe_in + DLNA *hyrec_integrator(dxedlna, dxedlna_prev, z_in);
     data->Tm_output[iz] = Tm_implicit(z_out, data->xe_output[iz], Tm_in, cosmo, dEdtdV, H_next, DLNA);
   }
+  else {
+    data->xe_output[iz] = xe_in + DLNA *hyrec_integrator(dxedlna, dxedlna_prev, z_in);
+    data->Tm_output[iz] = Tm_in + DLNA *hyrec_integrator(dTmdlna, dTmdlna_prev, z_in);
+  }
+
   if (*error == 1) {
     sprintf(sub_message, "  called from rec_get_xe_next2_HTm at z = %f\n", z_in);
     strcat(data->error_message, sub_message);
