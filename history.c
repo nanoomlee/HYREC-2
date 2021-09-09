@@ -119,7 +119,7 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
   rec_data.cosmo->fsR = rec_data.cosmo->meR = 1.;   /* Default: today's values */
   rec_data.cosmo->nH0 = 11.223846333047e-6*rec_data.cosmo->obh2*(1.-rec_data.cosmo->YHe);  // number density of hudrogen today in cm-3
   rec_data.cosmo->fHe = rec_data.cosmo->YHe/(1.-rec_data.cosmo->YHe)/3.97153;              // abundance of helium by number
-  if (MODEL == 4) rec_data.cosmo->dlna = DLNA_SWIFT;
+  if (MODEL == SWIFT) rec_data.cosmo->dlna = DLNA_SWIFT;
   else rec_data.cosmo->dlna = DLNA_HYREC;
   dlna = rec_data.cosmo->dlna;
 
@@ -291,7 +291,7 @@ void rec_get_cosmoparam(FILE *fin, FILE *fout, REC_COSMOPARAMS *param) {
 
   param->inj_params->odmh2      = param->ocbh2 - param->obh2;
 
-  if (MODEL == 4) param->dlna = DLNA_SWIFT;
+  if (MODEL == SWIFT) param->dlna = DLNA_SWIFT;
   else param->dlna = DLNA_HYREC;
 
   if (fout!=NULL) fprintf(fout, "\n");
@@ -362,7 +362,7 @@ Output: change in x per dt
 double hyrec_integrator(double deriv, double deriv_prev[2], double z) {
   double result;
 
-  if (MODEL == 3){
+  if (MODEL == FULL){
     if (z > 20 && z < 1500) result = 23./12.*deriv -16./12. * deriv_prev[0] + 5./12. *deriv_prev[1];
     else  result = 1.25 * deriv - 0.25 *deriv_prev[1];
   }
@@ -458,13 +458,13 @@ void rec_xH1_stiff(HYREC_DATA *data, int model, double z, double xHeII, double *
   
   T = kBoltz*cosmo->T0 * (ainv=1.+z);
   
-  if (model == 3) {
-    model_stiff = 2;
+  if (model == FULL) {
+    model_stiff = EMLA2s2p;
   }
   else{
     model_stiff = model;
-    if (model == 4){
-      if (T/kBoltz/cosmo->fsR/cosmo->fsR/cosmo->meR > data->fit->swift_func[0][DKK_SIZE-1] ) model_stiff = 2;
+    if (model == SWIFT){
+      if (T/kBoltz/cosmo->fsR/cosmo->fsR/cosmo->meR > data->fit->swift_func[0][DKK_SIZE-1] ) model_stiff = EMLA2s2p;
     }
   }
 
@@ -496,7 +496,7 @@ void rec_xH1_stiff(HYREC_DATA *data, int model, double z, double xHeII, double *
   //if (z<1700.) *stiff = 0;   /* Used when calculating the correction function for SWIFT mode. */
 
   /* Update photon population when MODEL = FULL */
-  if (model == 3) rec_dxHIIdlna(data, model, xHeII + 1.-*xH1, 1.-*xH1, nH, H, T, T, iz_rad, z);
+  if (model == FULL) rec_dxHIIdlna(data, model, xHeII + 1.-*xH1, 1.-*xH1, nH, H, T, T, iz_rad, z);
 
   if (*xH1 < 0. || *xH1 != *xH1) {
     sprintf(sub_message, "xH1 < 0 in rec_xH1_stiff: at z = %f, xH1 = %E\n", z, *xH1);
@@ -748,7 +748,7 @@ char* rec_build_history(HYREC_DATA *data, int model, double *hubble_array){
 
   for(; iz <= data->rad->iz_rad_0; iz++) {
 
-    if (model == 4 && data->quasi_eq == 0 && z > 2800.){
+    if (model == SWIFT && data->quasi_eq == 0 && z > 2800.){
       xe_i = xe_output[iz-1]; Tm_i = Tm_output[iz-1];
       for (flag=0;flag<10;flag++) {
         rec_get_xe_next1_He(data, z, &xHeII, dxHeIIdlna_prev_sub, hubble_array, flag);
@@ -833,7 +833,7 @@ char* rec_build_history(HYREC_DATA *data, int model, double *hubble_array){
   dxHIIdlna_prev_sub[0] = dxHIIdlna_prev[0];
   for (; z >= 700. && fabs(1.-Tm_output[iz-1]/cosmo->T0/(1.+z)) < DLNT_MAX; iz++) {
 
-    if (model == 4 &&z > 1500.){
+    if (model == SWIFT &&z > 1500.){
       xe_i = xe_output[iz-1]; Tm_i = Tm_output[iz-1];
       for (flag=0;flag<10;flag++) {
         rec_get_xe_next1_H(data, model, z, iz, xe_i, Tm_i, &xe_i, &Tm_i, dxHIIdlna_prev_sub, H, flag);
@@ -964,7 +964,7 @@ void hyrec_free(HYREC_DATA *data) {
   free(data->xe_output);
   free(data->Tm_output);
   free(data->error_message);
-  if (MODEL == 3) free_radiation(data->rad);
+  if (MODEL == FULL) free_radiation(data->rad);
   free(data->rad);
   free_fit(data->fit);
   free(data->fit);
