@@ -18,9 +18,11 @@
 #define MODEL SWIFT	                /* SWIFT is the default model. Four more models can be used (PEEBLES, RECFAST, EMLA2s2p, FULL). */
                                     /* Each model is defined in hydrogen.h */
 
+/* !!!!!  Do NOT change any numbers below unless you know what's going on with each parameter exactly !!!!! */
+
 #define SIZE_ErrorM      2048
 
-#define DXHEII_MAX       1e-5       /* If xHeII - xHeII(Saha) < DXEHII_MAX, use post-Saha expansion for Helium. Lower value = higher accuracy. */
+#define DXHEII_MAX       1e-5       /* If xHeII - xHeII(Saha) < DXEHII_MAX, use post-Saha expansion for Helium.*/
 #define DXHEII_DIFF_MAX  5e-2       /* If |1-dxHeIIdlna_prev/dxHeIIdlna| > DXHEII_DIFF_MAX, do loop with 10 times smaller time step */
 
 #define DXHII_MAX        3e-4       /* If xHII - xHII(Saha) < DXHII_MAX, use post-Saha expansion for Hydrogen. Switch to ODE integration after that.

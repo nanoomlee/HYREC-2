@@ -19,6 +19,9 @@
 /*            - Written November 2010.                                                                  */
 /********************************************************************************************************/
 
+/* !!!!!  Do NOT change any numbers below (except DLNA). They are not accuracy parameters !!!!! */
+/* !!!!!  If needed, only DLNA_HYREC or DLNA_SWIFT can be set to be a lower value for better accuracy !!!!! */
+
 #ifndef __HYDROGEN__
 #define __HYDROGEN__
 
