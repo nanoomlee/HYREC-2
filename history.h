@@ -45,7 +45,7 @@ double rec_dTmdlna(double z, double xe, double Tm, REC_COSMOPARAMS *cosmo, doubl
 
 double Tm_implicit(double z, double xe, double Tm, REC_COSMOPARAMS *cosmo, double dEdtdV, double H, double DLNA);
 
-void rec_get_xe_next1_He(HYREC_DATA *data, double z_in, double *xHeII, double *dxHeIIdlna_prev,
+void rec_get_xe_next1_He(HYREC_DATA *data, double z_in, double *xHeII, double dxHeIIdlna_prev[2],
                          double *hubble_array, int flag);
 
 void rec_xH1_stiff(HYREC_DATA *data, int model, double z, double xHeII, double *xH1, unsigned iz_rad, double H);

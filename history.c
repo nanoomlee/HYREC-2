@@ -84,7 +84,7 @@ void rec_build_history_camb_(const double* OmegaC, const double* OmegaB, const d
   double zmin = 0.;
   double h = *h0inp/100.;
   double h2 = h*h;
-  char sub_message[1024];
+  char sub_message[SIZE_ErrorM];
 
   /* To load tables only once */
   if (firstTime==0){
@@ -390,7 +390,7 @@ void rec_get_xe_next1_He(HYREC_DATA *data, double z_in, double *xHeII, double dx
   int *error = &data->error;
 
   double xH1, xH1_p, xH1_m, xHeIISaha, dxHeIISaha_dlna, DdxHeIIdlna_Dxe, dxHeIIdlna, z_out, Dxe, DLNA;
-  char sub_message[128];
+  char sub_message[SIZE_ErrorM];
   double H;
   if (flag==10) DLNA = cosmo->dlna;
   else DLNA = cosmo->dlna/10.;
@@ -448,7 +448,7 @@ void rec_xH1_stiff(HYREC_DATA *data, int model, double z, double xHeII, double *
 
   double ainv, xH1sSaha, xHIISaha, dxH1sSaha_dlna, dxH1sdlna_Saha, DdxH1sdlna_DxH1s, T, nH, Dxe;
   int model_stiff;	// To use EMLA2p2s model for PostSaha in FULL and SWIFT mode
-  char sub_message[128];
+  char sub_message[SIZE_ErrorM];
 
   // Set model for rec_xH1_stiff. FULL mode uses EMLA2s2p for stiff. 
   // SWIFT mode uses EMLA2s2p for stiff when z is not in the range of redshifts for SWIFT fitting function.
@@ -528,7 +528,7 @@ void get_rec_next2_HHe(HYREC_DATA *data, int model, double z_in, long iz, double
 
   double dxHeIIdlna, dxHIIdlna, z_out, xe;
   double nH, TR, DLNA;
-  char sub_message[128];
+  char sub_message[SIZE_ErrorM];
   DLNA = cosmo->dlna;
   xe = *xHeII + 1.- (*xH1);
   nH = cosmo->nH0 *cube(1.+z_in);
@@ -582,7 +582,7 @@ void rec_get_xe_next1_H(HYREC_DATA *data, int model, double z_in, long iz, doubl
 
   double dxedlna, z_out;
   double nH, TR, xH1, dEdtdV, DLNA;
-  char sub_message[128];
+  char sub_message[SIZE_ErrorM];
   if (flag==10) DLNA = cosmo->dlna;
   else DLNA = cosmo->dlna/10.;
 
@@ -644,7 +644,7 @@ void rec_get_xe_next2_HTm(HYREC_DATA *data, int model, double z_in, long iz, dou
   long iz_rad = iz-1-data->rad->iz_rad_0;
 
   double dxedlna, dTmdlna, nH, TR, dEdtdV, DLNA;
-  char sub_message[128];
+  char sub_message[SIZE_ErrorM];
   DLNA = cosmo->dlna;
 
   nH = cosmo->nH0 *cube(1.+z_in);
