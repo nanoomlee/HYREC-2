@@ -526,7 +526,7 @@ void get_rec_next2_HHe(HYREC_DATA *data, int model, double z_in, long iz, double
   double Tm = data->Tm_output[iz-1];
   long iz_rad = iz-1-data->rad->iz_rad_0;
 
-  double dxHeIIdlna, dxHIIdlna=0., z_out, xe;
+  double dxHeIIdlna, dxHIIdlna = 0., z_out, xe;
   double nH, TR, DLNA;
   char sub_message[SIZE_ErrorM];
   DLNA = cosmo->dlna;
