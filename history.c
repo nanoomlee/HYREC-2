@@ -160,7 +160,6 @@ double hyrec_xe_(double* a, double *xe){
   double loga = log(*a);
   int error;   /* error and error_message are meaningless here */
   char *error_message;
-  error_message = malloc(SIZE_ErrorM);
   if (loga < logstart) return xe[0];
   return rec_interp1d(logstart, dlna, xe, Nz, loga, &error, error_message);
 }
